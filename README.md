@@ -70,9 +70,6 @@ edkairos/
 ### 📞 Support
 
 For questions or issues, please refer to the documentation in the `docs/` folder or contact the development team.
-
 ---
 
-**Status:** Phase 1 - Foundation & Design (In Progress)
-**Timeline:** 6-7 weeks total project
-**Budget:** $3,500 USD 
+**Status:** Phase 1 - Foundation & Design (In Review)
