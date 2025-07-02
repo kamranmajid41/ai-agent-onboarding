@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 
 const objectivesList = [
   'Book Appointments',
@@ -39,6 +40,9 @@ export default function Step3AgentPersonality() {
     saturday: { open: '', close: '', enabled: false },
     sunday: { open: '', close: '', enabled: false }
   });
+  const [touched, setTouched] = useState({});
+  const [error, setError] = useState('');
+  const [showTooltip, setShowTooltip] = useState('');
 
   const handleObjectiveToggle = (obj) => {
     setObjectives(objectives.includes(obj)
@@ -67,7 +71,19 @@ export default function Step3AgentPersonality() {
   };
 
   const isBookingEnabled = objectives.includes('Book Appointments');
-  const isValid = objectives.length > 0 && personality && services.every(s => s) && fallback;
+
+  const getFieldError = (name) => {
+    if (!touched[name]) return '';
+    if (name === 'objectives' && objectives.length === 0) return 'Select at least one objective.';
+    if (name === 'personality' && !personality) return 'Select a personality.';
+    if (name === 'services' && services.some(s => !s)) return 'All three services are required.';
+    if (name === 'fallback' && !fallback) return 'Select a fallback behavior.';
+    if (name === 'customPersonality' && personality === 'Custom' && !customPersonality) return 'Describe your custom personality.';
+    if (name === 'customFallback' && fallback === 'Custom Text Response' && !customFallback) return 'Enter your custom fallback response.';
+    return '';
+  };
+
+  const isValid = objectives.length > 0 && personality && services.every(s => s) && fallback && (personality !== 'Custom' || customPersonality) && (fallback !== 'Custom Text Response' || customFallback);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-100 flex flex-col">
@@ -89,79 +105,117 @@ export default function Step3AgentPersonality() {
           </div>
           <h2 className="text-2xl font-bold mb-2 text-primary-800">Define Agent Purpose & Personality</h2>
           <p className="text-secondary-700 mb-6">Help us shape the voice and goals of your AI. You'll see a live preview next.</p>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={e => { if (!isValid) { e.preventDefault(); setTouched({objectives:true,personality:true,services:true,fallback:true,customPersonality:true,customFallback:true}); setError('Please fix errors before continuing.'); } }} noValidate>
             {/* Objectives */}
             <div>
-              <label className="block text-sm font-medium mb-2">Primary Objective(s) <span className="text-primary-600">(Select all that apply)</span></label>
+              <label className="block text-sm font-medium mb-2 flex items-center gap-1">
+                Primary Objective(s) <span className="text-primary-600">(Select all that apply)</span>
+                <span onMouseEnter={()=>setShowTooltip('objectives')} onMouseLeave={()=>setShowTooltip('')} tabIndex={0} aria-label="Objectives Info">
+                  <AiOutlineInfoCircle className="inline text-primary-400 cursor-pointer" />
+                </span>
+                {showTooltip==='objectives' && <span className="absolute bg-white border p-2 rounded shadow text-xs z-10">Choose what you want your AI agent to accomplish.</span>}
+              </label>
               <div className="flex flex-wrap gap-3">
                 {objectivesList.map(obj => (
-                  <button type="button" key={obj} onClick={() => handleObjectiveToggle(obj)}
+                  <button type="button" key={obj} onClick={() => { handleObjectiveToggle(obj); setTouched({ ...touched, objectives: true }); }}
                     className={`px-4 py-2 rounded-lg border ${objectives.includes(obj) ? 'bg-primary-600 text-white border-primary-600' : 'bg-secondary-100 text-secondary-700 border-secondary-300'} transition`}>
                     {obj}
                   </button>
                 ))}
               </div>
+              {getFieldError('objectives') && <div className="text-red-600 text-xs mt-1">{getFieldError('objectives')}</div>}
             </div>
             {/* Personality */}
             <div>
-              <label className="block text-sm font-medium mb-2">Bot Voice & Personality</label>
+              <label className="block text-sm font-medium mb-2 flex items-center gap-1">
+                Bot Voice & Personality
+                <span onMouseEnter={()=>setShowTooltip('personality')} onMouseLeave={()=>setShowTooltip('')} tabIndex={0} aria-label="Personality Info">
+                  <AiOutlineInfoCircle className="inline text-primary-400 cursor-pointer" />
+                </span>
+                {showTooltip==='personality' && <span className="absolute bg-white border p-2 rounded shadow text-xs z-10">Select a tone for your AI agent. Choose 'Custom' to describe your own.</span>}
+              </label>
               <div className="flex flex-wrap gap-3">
                 {personalities.map(p => (
-                  <button type="button" key={p} onClick={() => setPersonality(p)}
+                  <button type="button" key={p} onClick={() => { setPersonality(p); setTouched({ ...touched, personality: true }); }}
                     className={`px-4 py-2 rounded-lg border ${personality === p ? 'bg-primary-600 text-white border-primary-600' : 'bg-secondary-100 text-secondary-700 border-secondary-300'} transition`}>
                     {p}
                   </button>
                 ))}
               </div>
+              {getFieldError('personality') && <div className="text-red-600 text-xs mt-1">{getFieldError('personality')}</div>}
               {personality === 'Custom' && (
-                <input type="text" value={customPersonality} onChange={e => setCustomPersonality(e.target.value)} placeholder="Describe your brand tone" className="mt-2 w-full border rounded-lg px-3 py-2" />
+                <input type="text" value={customPersonality} onChange={e => { setCustomPersonality(e.target.value); setTouched({ ...touched, customPersonality: true }); }} onBlur={() => setTouched({ ...touched, customPersonality: true })} placeholder="Describe your brand tone" aria-label="Custom Personality" className={`mt-2 w-full border rounded-lg px-3 py-2 ${getFieldError('customPersonality') ? 'border-red-500' : ''}`} />
               )}
+              {getFieldError('customPersonality') && <div className="text-red-600 text-xs mt-1">{getFieldError('customPersonality')}</div>}
             </div>
             {/* Services */}
             <div>
-              <label className="block text-sm font-medium mb-2">Top 3 Services or Offers</label>
+              <label className="block text-sm font-medium mb-2 flex items-center gap-1">
+                Top 3 Services or Offers
+                <span onMouseEnter={()=>setShowTooltip('services')} onMouseLeave={()=>setShowTooltip('')} tabIndex={0} aria-label="Services Info">
+                  <AiOutlineInfoCircle className="inline text-primary-400 cursor-pointer" />
+                </span>
+                {showTooltip==='services' && <span className="absolute bg-white border p-2 rounded shadow text-xs z-10">List your top three services or offers. These help the AI understand your business focus.</span>}
+              </label>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {services.map((s, i) => (
-                  <input key={i} type="text" value={s} onChange={e => handleServiceChange(i, e.target.value)} placeholder={`Service ${i + 1}`} className="w-full border rounded-lg px-3 py-2" />
+                  <input key={i} type="text" value={s} onChange={e => { handleServiceChange(i, e.target.value); setTouched({ ...touched, services: true }); }} onBlur={() => setTouched({ ...touched, services: true })} placeholder={`Service ${i + 1}`} aria-label={`Service ${i + 1}`} className={`w-full border rounded-lg px-3 py-2 ${getFieldError('services') ? 'border-red-500' : ''}`} />
                 ))}
               </div>
+              {getFieldError('services') && <div className="text-red-600 text-xs mt-1">{getFieldError('services')}</div>}
             </div>
             {/* Fallback Behavior */}
             <div>
-              <label className="block text-sm font-medium mb-2">Fallback Behavior</label>
-              <select value={fallback} onChange={e => setFallback(e.target.value)} className="w-full border rounded-lg px-3 py-2">
+              <label className="block text-sm font-medium mb-2 flex items-center gap-1">
+                Fallback Behavior
+                <span onMouseEnter={()=>setShowTooltip('fallback')} onMouseLeave={()=>setShowTooltip('')} tabIndex={0} aria-label="Fallback Info">
+                  <AiOutlineInfoCircle className="inline text-primary-400 cursor-pointer" />
+                </span>
+                {showTooltip==='fallback' && <span className="absolute bg-white border p-2 rounded shadow text-xs z-10">Choose what the AI should do if it can't answer a question.</span>}
+              </label>
+              <select value={fallback} onChange={e => { setFallback(e.target.value); setTouched({ ...touched, fallback: true }); }} onBlur={() => setTouched({ ...touched, fallback: true })} className={`w-full border rounded-lg px-3 py-2 ${getFieldError('fallback') ? 'border-red-500' : ''}`} aria-label="Fallback Behavior">
                 <option value="">Select fallback response</option>
                 {fallbackOptions.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
+              {getFieldError('fallback') && <div className="text-red-600 text-xs mt-1">{getFieldError('fallback')}</div>}
               {fallback === 'Custom Text Response' && (
-                <input type="text" value={customFallback} onChange={e => setCustomFallback(e.target.value)} placeholder="Custom fallback response" className="mt-2 w-full border rounded-lg px-3 py-2" />
+                <input type="text" value={customFallback} onChange={e => { setCustomFallback(e.target.value); setTouched({ ...touched, customFallback: true }); }} onBlur={() => setTouched({ ...touched, customFallback: true })} placeholder="Custom fallback response" aria-label="Custom Fallback Response" className={`mt-2 w-full border rounded-lg px-3 py-2 ${getFieldError('customFallback') ? 'border-red-500' : ''}`} />
               )}
+              {getFieldError('customFallback') && <div className="text-red-600 text-xs mt-1">{getFieldError('customFallback')}</div>}
             </div>
             {/* Business Hours */}
             {isBookingEnabled && (
               <div>
-                <label className="block text-sm font-medium mb-2">Business Hours (if booking enabled)</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <label className="block text-sm font-medium mb-2">Business Hours (if booking enabled)
+                  <span onMouseEnter={()=>setShowTooltip('hours')} onMouseLeave={()=>setShowTooltip('')} tabIndex={0} aria-label="Business Hours Info">
+                    <AiOutlineInfoCircle className="inline text-primary-400 cursor-pointer ml-1" />
+                  </span>
+                  {showTooltip==='hours' && <span className="absolute bg-white border p-2 rounded shadow text-xs z-10">Set your business hours for appointment booking.</span>}
+                </label>
+                <div className="space-y-3">
                   {Object.entries(businessHours).map(([day, val]) => (
-                    <div key={day} className="flex items-center gap-2">
-                      <input type="checkbox" checked={val.enabled} onChange={() => handleDayToggle(day)} />
-                      <span className="capitalize w-20">{day}</span>
-                      <input type="time" value={val.open} onChange={e => handleHourChange(day, 'open', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-24" />
-                      <span>-</span>
-                      <input type="time" value={val.close} onChange={e => handleHourChange(day, 'close', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-24" />
+                    <div key={day} className="flex items-center gap-3 p-2 border rounded-lg">
+                      <input type="checkbox" checked={val.enabled} onChange={() => handleDayToggle(day)} aria-label={`Enable ${day}`} className="flex-shrink-0" />
+                      <span className="capitalize w-20 text-sm font-medium">{day}</span>
+                      <div className="flex items-center gap-2 flex-1">
+                        <input type="time" value={val.open} onChange={e => handleHourChange(day, 'open', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-24 text-sm" aria-label={`${day} open`} />
+                        <span className="text-secondary-500">to</span>
+                        <input type="time" value={val.close} onChange={e => handleHourChange(day, 'close', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-24 text-sm" aria-label={`${day} close`} />
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
+            {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
             <div className="flex justify-between mt-8">
               <Link href="/onboarding/step2" legacyBehavior>
                 <a className="px-6 py-2 rounded-lg bg-secondary-200 text-secondary-700 hover:bg-secondary-300 transition">Back</a>
               </Link>
-              <Link href="/onboarding/step4" legacyBehavior>
-                <a className={`px-8 py-2 rounded-lg font-semibold shadow transition ${isValid ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-secondary-200 text-secondary-500 cursor-not-allowed'}`}>Next Step</a>
+              <Link href={isValid ? "/onboarding/step4" : "#"} legacyBehavior>
+                <a onClick={e => { if (!isValid) { e.preventDefault(); setTouched({objectives:true,personality:true,services:true,fallback:true,customPersonality:true,customFallback:true}); setError('Please fix errors before continuing.'); } }} className={`px-8 py-2 rounded-lg font-semibold shadow transition ${isValid ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-secondary-200 text-secondary-500 cursor-not-allowed'}`}>Next Step</a>
               </Link>
             </div>
           </form>
