@@ -200,9 +200,9 @@ export default function Step3AgentPersonality() {
                       <input type="checkbox" checked={val.enabled} onChange={() => handleDayToggle(day)} aria-label={`Enable ${day}`} className="flex-shrink-0" />
                       <span className="capitalize w-20 text-sm font-medium">{day}</span>
                       <div className="flex items-center gap-2 flex-1">
-                        <input type="time" value={val.open} onChange={e => handleHourChange(day, 'open', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-24 text-sm" aria-label={`${day} open`} />
+                        <input type="time" value={val.open} onChange={e => handleHourChange(day, 'open', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-32 text-sm" aria-label={`${day} open`} />
                         <span className="text-secondary-500">to</span>
-                        <input type="time" value={val.close} onChange={e => handleHourChange(day, 'close', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-24 text-sm" aria-label={`${day} close`} />
+                        <input type="time" value={val.close} onChange={e => handleHourChange(day, 'close', e.target.value)} disabled={!val.enabled} className="border rounded px-2 py-1 w-32 text-sm" aria-label={`${day} close`} />
                       </div>
                     </div>
                   ))}

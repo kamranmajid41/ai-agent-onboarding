@@ -149,7 +149,7 @@
 │                                                                 │
 │  Step 2: Upload Business Assets                                │
 │  Upload files that describe your business — brochures,         │
-│  service lists, menus, FAQs, pricing sheets.                   │
+│  service lists, menus, FAQs, business documents.               │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────────┐ │
 │  │ File Upload Zone                                           │ │
@@ -162,7 +162,7 @@
 │  │                                                             │ │
 │  │ Uploaded Files:                                            │ │
 │  │ ✅ services.pdf (2.3MB) - Processed                       │ │
-│  │ ✅ pricing.docx (1.1MB) - Processed                       │ │
+│  │ ✅ business-docs.docx (1.1MB) - Processed                 │ │
 │  │ ⏳ faq.pdf (3.2MB) - Processing...                        │ │
 │  │                                                             │ │
 │  └─────────────────────────────────────────────────────────────┘ │

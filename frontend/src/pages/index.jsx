@@ -8,7 +8,7 @@ export default function Home() {
         <div className="text-2xl font-bold text-primary-700">AI Agent Platform</div>
         <nav className="space-x-6 text-secondary-700 font-medium">
           <Link href="#features">Features</Link>
-          <Link href="#pricing">Pricing</Link>
+          
           <Link href="#contact">Contact</Link>
           <Link href="/onboarding/step1" className="ml-4 px-5 py-2 bg-primary-600 text-white rounded-lg shadow hover:bg-primary-700 transition">Start Free</Link>
         </nav>

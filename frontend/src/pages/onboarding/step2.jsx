@@ -83,7 +83,7 @@ export default function Step2UploadAssets() {
             <span className="ml-4 text-primary-700 font-semibold">Step 2 of 5</span>
           </div>
           <h2 className="text-2xl font-bold mb-2 text-primary-800">Upload Business Assets</h2>
-          <p className="text-secondary-700 mb-6">Upload files that describe your business — brochures, service lists, menus, FAQs, pricing sheets. Acceptable formats: PDF, Word, Web Pages.</p>
+          <p className="text-secondary-700 mb-6">Upload files that describe your business — brochures, service lists, menus, FAQs, business documents. Acceptable formats: PDF, Word, Web Pages.</p>
           <form className="space-y-6" onSubmit={e => { if (!isValid) { e.preventDefault(); setTouched({files:true,website:true,docLinks:true}); setError('Please fix errors before continuing.'); } }} noValidate>
             {/* File Upload */}
             <div>

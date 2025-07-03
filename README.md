@@ -9,7 +9,6 @@ A clean, conditional multi-step onboarding wizard for businesses to autonomously
 **Goal:** Enable businesses to autonomously onboard AI agents by uploading essential company data, documents, and preferences with zero vendor intervention.
 
 **Selected Template:** iGent – AI Agent Template (Framer)
-- Free to use – zero upfront design cost
 - Built specifically for AI agent platforms
 - Includes pages for integrations, onboarding, and agent profiles
 - Easy to customize for voice + chat bot setup
@@ -121,5 +120,4 @@ For questions or issues, please refer to the documentation in the `docs/` folder
 
 **Status:** Phase 2 - Core Frontend Development ✅ COMPLETED  
 **Next Phase:** Phase 3 - Backend Development & Integrations  
-**Timeline:** 6-7 weeks total project  
-**Budget:** $3,500 USD
+**Timeline:** 6-7 weeks total project
