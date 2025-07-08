@@ -10,6 +10,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-agent-onboarding', {
   useNewUrlParser: true,
