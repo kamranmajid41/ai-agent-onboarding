@@ -35,9 +35,8 @@
     "pdf-parse": "^1.1.1",
     "puppeteer": "^19.7.2",
     "rate-limiter-flexible": "^2.3.6",
-    "winston": "^3.11.0",
     "uuid": "^9.0.0",
-    "textract": "^2.5.0"
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@types/node": "^20.8.0",
