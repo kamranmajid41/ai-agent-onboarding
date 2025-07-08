@@ -20,12 +20,23 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-agent-
 
 // Middleware
 app.use(helmet());
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://ai-agent-onboarding.vercel.app'
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://ai-agent-onboarding.vercel.app'
-  ],
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(compression());
 app.use(morgan('combined'));
