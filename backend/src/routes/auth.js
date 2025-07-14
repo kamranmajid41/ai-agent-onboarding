@@ -5,7 +5,10 @@ const {
   logout,
   getMe,
   updateProfile,
-  updatePassword
+  updatePassword,
+  setupAdmin,
+  forgotPassword,
+  resetPassword
 } = require('../controllers/authController');
 
 const { protect } = require('../middleware/auth');
@@ -15,6 +18,11 @@ const router = express.Router();
 // Public routes
 router.post('/register', register);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
+router.put('/reset-password/:resettoken', resetPassword);
+
+// Temporary route to setup admin (REMOVE AFTER USE!)
+router.post('/setup-admin', setupAdmin);
 
 // Protected routes
 router.get('/me', protect, getMe);

@@ -44,17 +44,29 @@ const ChatInterface = ({
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = {
+    try {
+      if (onSendMessage) {
+        const agentResponseContent = await onSendMessage(userMessage.content);
+        const aiResponse = {
+          id: Date.now() + 1,
+          type: 'agent',
+          content: agentResponseContent,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      }
+    } catch (error) {
+      console.error("Error sending message to AI agent:", error);
+      const errorMessage = {
         id: Date.now() + 1,
         type: 'agent',
-        content: `Thank you for your message: "${userMessage.content}". This is a simulated response from ${agentName}. In a real implementation, this would be processed by the AI model.`,
+        content: "I'm sorry, I couldn't get a response from the AI agent. Please try again later.",
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e) => {

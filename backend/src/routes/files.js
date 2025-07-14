@@ -6,6 +6,8 @@ const UploadedAsset = require('../models/UploadedAsset');
 const { protect } = require('../middleware/auth');
 const path = require('path');
 const filesController = require('../controllers/filesController');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 const router = express.Router();
 
@@ -66,27 +68,70 @@ router.post('/upload', protect, upload.single('file'), async (req, res) => {
   }
 });
 
+// @route   POST /api/files/crawl
+// @desc    Crawl a website and extract text content
+// @access  Private
 router.post('/crawl', protect, async (req, res) => {
+  const { url } = req.body;
+
+  if (!url) {
+    return res.status(400).json({ success: false, message: 'URL is required' });
+  }
+
   try {
-    const { url } = req.body;
-    if (!url) return res.status(400).json({ success: false, message: 'No URL provided' });
-    // TODO: Implement actual crawling logic
-    const extractedText = '[Crawled text placeholder]';
-    res.status(200).json({ success: true, extractedText });
+    const response = await axios.get(url);
+    const $ = cheerio.load(response.data);
+    // Extract text from common elements, you might want to refine this
+    const extractedText = $('p, h1, h2, h3, h4, h5, h6, li, span').text();
+
+    // Save the crawled content as an uploaded asset (optional, but useful for agent context)
+    const newAsset = new UploadedAsset({
+      user: req.user.id,
+      fileName: url,
+      fileType: 'text/html',
+      s3Url: '', // No S3 URL for crawled content directly
+      extractedText: extractedText,
+      source: 'web_crawl',
+    });
+    await newAsset.save();
+
+    res.json({ success: true, msg: 'Web content crawled and saved', extractedText });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to crawl website', error: err.message });
+    console.error(err.message);
+    res.status(500).json({ success: false, message: 'Server Error', error: err.message });
   }
 });
 
+// @route   POST /api/files/doclink
+// @desc    Fetch content from a public document link (e.g., Google Docs, Notion public share)
+// @access  Private
 router.post('/doclink', protect, async (req, res) => {
+  const { url } = req.body;
+
+  if (!url) {
+    return res.status(400).json({ success: false, message: 'URL is required' });
+  }
+
   try {
-    const { link } = req.body;
-    if (!link) return res.status(400).json({ success: false, message: 'No link provided' });
-    // TODO: Implement actual Google Docs/Notion fetching logic
-    const extractedText = '[Doc link text placeholder]';
-    res.status(200).json({ success: true, extractedText });
+    const response = await axios.get(url);
+    // For document links, we'll try to extract text directly from the response
+    // This might need more sophisticated parsing based on the document type
+    const extractedText = response.data; // This is a simplistic approach
+
+    const newAsset = new UploadedAsset({
+      user: req.user.id,
+      fileName: url,
+      fileType: 'text/plain', // Assuming plain text for now, can be improved
+      s3Url: '', // No S3 URL for doclink content directly
+      extractedText: extractedText,
+      source: 'doc_link',
+    });
+    await newAsset.save();
+
+    res.json({ success: true, msg: 'Document link content fetched and saved', extractedText });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to fetch doc link', error: err.message });
+    console.error(err.message);
+    res.status(500).json({ success: false, message: 'Server Error', error: err.message });
   }
 });
 

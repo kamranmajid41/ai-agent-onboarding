@@ -4,6 +4,11 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
   firstName: {
     type: String,
     required: [true, 'First name is required'],
@@ -201,18 +206,18 @@ userSchema.methods.getJwtToken = function() {
   );
 };
 
-// Generate password reset token
+// Add to User Schema for token generation
 userSchema.methods.getResetPasswordToken = function() {
   // Generate token
   const resetToken = crypto.randomBytes(20).toString('hex');
 
-  // Hash and set to resetPasswordToken
+  // Hash token and set to resetPasswordToken field
   this.resetPasswordToken = crypto
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
 
-  // Set token expire time
+  // Set expire
   this.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   return resetToken;

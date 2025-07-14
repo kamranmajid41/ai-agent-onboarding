@@ -9,11 +9,11 @@ import DashboardOverview from '../components/dashboard/DashboardOverview';
 import DashboardOnboarding from '../components/dashboard/DashboardOnboarding';
 import DashboardSettings from '../components/dashboard/DashboardSettings';
 import DashboardAnalytics from '../components/dashboard/DashboardAnalytics';
-import { 
-  AiOutlineUser, 
-  AiOutlineRobot, 
-  AiOutlineBell, 
-  AiOutlineApi, 
+import {
+  AiOutlineUser,
+  AiOutlineRobot,
+  AiOutlineBell,
+  AiOutlineApi,
   AiOutlineSecurityScan,
   AiOutlineDashboard,
   AiOutlineRocket,
@@ -210,6 +210,32 @@ export default function Dashboard() {
     }
   };
 
+  const handleAgentSendMessage = async (message) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/agents/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.response;
+    } catch (error) {
+      console.error("Error sending message to backend agent:", error);
+      setToastMessage('Failed to get agent response. Please check backend.');
+      setToastType('error');
+      setShowToast(true);
+      return "Error: Could not get a response from the agent.";
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: AiOutlineDashboard },
     { id: 'onboarding', label: 'Onboarding', icon: AiOutlineRocket },
@@ -248,43 +274,25 @@ export default function Dashboard() {
         {/* Navigation Tabs */}
         <nav className="glass-dark border-b border-dark-600/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                    }}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-all duration-300 ${
-                      activeTab === tab.id
-                        ? 'border-primary-500 text-primary-400 bg-primary-900/20'
-                        : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
+            <div className="flex space-x-4">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`py-3 px-4 inline-flex items-center gap-2 text-sm font-medium rounded-t-lg transition-all duration-300 ${activeTab === tab.id ? 'bg-surface-700 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-surface-800'}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  <tab.icon className="w-5 h-5" />
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </div>
         </nav>
 
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Simple Tab Content */}
-          {activeTab === 'overview' && (
-            <DashboardOverview 
-              user={user}
-              metrics={metrics}
-              onboardingData={onboardingData}
-              getOnboardingProgress={getOnboardingProgress}
-              getStepTitle={getStepTitle}
-              setActiveTab={setActiveTab}
-            />
-          )}
+        {/* Main Content Area */}
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="space-y-6">
+            {activeTab === 'overview' && <DashboardOverview />}
 
           {activeTab === 'onboarding' && (
             <DashboardOnboarding 
@@ -306,7 +314,7 @@ export default function Dashboard() {
                       <div className="mt-2">
                         Incomplete steps:
                         <ul className="list-disc list-inside ml-4 mt-1">
-                          {[1,2,3,4,5].filter(step => !isStepComplete(step, onboardingData)).map(step => (
+                          {[1, 2, 3, 4, 5].filter(step => !isStepComplete(step, onboardingData)).map(step => (
                             <li key={step} className="text-warning-200">{getStepTitle(step)}</li>
                           ))}
                         </ul>
@@ -347,6 +355,14 @@ export default function Dashboard() {
                   </div>
                 </div>
               </Card>
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-white mb-4">AI Agent Preview</h2>
+                <ChatInterface
+                  agentName={settings.agentName}
+                  welcomeMessage={settings.welcomeMessage}
+                  onSendMessage={handleAgentSendMessage}
+                />
+              </Card>
             </div>
           )}
 
@@ -355,7 +371,7 @@ export default function Dashboard() {
               <Card className="card card-hover">
                 <div className="p-6">
                   <h3 className="text-lg font-semibold text-white mb-4">Live Chat Preview</h3>
-                  <ChatInterface />
+                  <ChatInterface onSendMessage={handleAgentSendMessage} />
                 </div>
               </Card>
             </div>

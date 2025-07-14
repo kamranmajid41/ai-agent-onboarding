@@ -60,6 +60,7 @@ app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/files', require('./routes/files'));
 app.use('/api/agents', require('./routes/agents'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

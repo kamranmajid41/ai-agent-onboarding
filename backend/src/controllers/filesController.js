@@ -1,12 +1,20 @@
 const UploadedAsset = require('../models/UploadedAsset');
 const path = require('path');
+const pdf = require('pdf-parse');
+const mammoth = require('mammoth');
+const fs = require('fs');
 
-// TODO: Import file parsing libraries (pdf-parse, mammoth, etc.)
-
-// Extract text from uploaded file (stub)
-exports.extractTextFromFile = async (fileBuffer, originalName) => {
-  const ext = path.extname(originalName).toLowerCase();
-  // TODO: Implement actual parsing logic for .pdf, .docx, .txt
-  // For now, just return a placeholder
-  return '[Extracted text placeholder]';
+exports.extractTextFromFile = async (filePath, mimetype) => {
+  if (mimetype === 'application/pdf') {
+    const dataBuffer = fs.readFileSync(filePath);
+    const data = await pdf(dataBuffer);
+    return data.text;
+  } else if (mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    const { value } = await mammoth.extractRawText({ path: filePath });
+    return value;
+  } else if (mimetype === 'text/plain') {
+    return fs.readFileSync(filePath, 'utf8');
+  } else {
+    return 'Unsupported file type';
+  }
 }; 

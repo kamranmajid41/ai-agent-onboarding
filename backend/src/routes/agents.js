@@ -1,32 +1,54 @@
 const express = require('express');
 const { protect } = require('../middleware/auth');
 const ConversationLog = require('../models/ConversationLog');
-const openaiService = require('../services/openaiService');
+const { generateAgentResponse } = require('../services/openaiService');
 const User = require('../models/User');
 
 const router = express.Router();
 
-// Agent chat preview endpoint
+// @route   POST /api/agents/chat
+// @desc    Send a message to the AI agent and get a response
+// @access  Private
 router.post('/chat', protect, async (req, res) => {
+  const { message } = req.body;
+  const userId = req.user.id;
+
+  if (!message) {
+    return res.status(400).json({ msg: 'Message is required' });
+  }
+
   try {
-    const { message } = req.body;
-    if (!message) return res.status(400).json({ success: false, message: 'No message provided' });
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-    // Use OpenAI to generate agent response (stub for now)
-    const agentReply = await openaiService.summarizeText(message); // Replace with real chat logic
-    // Log conversation
-    const log = await ConversationLog.create({
-      user: req.user.id,
-      agentConfig: user.onboardingData.step3,
-      messages: [
-        { sender: 'user', text: message },
-        { sender: 'agent', text: agentReply }
-      ]
+    // Fetch user-specific agent configuration or general config
+    const user = await User.findById(userId);
+    let agentConfig = {};
+    if (user && user.agentConfig) {
+      agentConfig = user.agentConfig; // Assuming agentConfig is stored on the User model
+    }
+
+    // Construct the prompt for the AI agent
+    const prompt = `User: ${message}\nAgent Persona: ${agentConfig.persona || 'You are a helpful AI assistant.'}\nContext: ${agentConfig.context || ''}\nResponse:`;
+
+    // Use OpenAI to generate agent response
+    const agentResponse = await generateAgentResponse(prompt);
+
+    // Save conversation log
+    const newConversation = new ConversationLog({
+      user: userId,
+      agent: agentConfig.agentName || 'Default Agent',
+      messages: [{
+        role: 'user',
+        content: message
+      }, {
+        role: 'agent',
+        content: agentResponse
+      }, ],
     });
-    res.status(200).json({ success: true, reply: agentReply, log });
+    await newConversation.save();
+
+    res.json({ response: agentResponse });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Agent chat failed', error: err.message });
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
 
