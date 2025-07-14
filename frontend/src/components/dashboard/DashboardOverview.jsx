@@ -26,34 +26,34 @@ export default function DashboardOverview({
         <MetricsCard
           title="Total Conversations"
           value={metrics.totalConversations}
-          change="+12%"
-          changeType="positive"
+          change="" // Removed placeholder change
+          changeType="none"
           icon="💬"
           tooltip="Total number of conversations handled by your AI agent."
         />
         <MetricsCard
-          title="Avg Response Time"
-          value={metrics.avgResponseTime}
-          change="-8%"
-          changeType="positive"
-          icon="⚡"
-          tooltip="Average time your agent takes to respond to a message."
+          title="Total Messages"
+          value={metrics.totalMessages}
+          change="" // Removed placeholder change
+          changeType="none"
+          icon="✉️"
+          tooltip="Total number of messages exchanged in conversations."
         />
         <MetricsCard
-          title="Satisfaction Rate"
-          value={`${metrics.satisfactionRate}%`}
-          change="+3%"
-          changeType="positive"
-          icon="😊"
-          tooltip="Percentage of users who rated their experience as positive."
+          title="Avg Message Length"
+          value={metrics.averageMessageLength !== 'N/A' ? `${metrics.averageMessageLength} chars` : 'N/A'}
+          change="" // Removed placeholder change
+          changeType="none"
+          icon="📝"
+          tooltip="Average character length of messages in conversations."
         />
         <MetricsCard
           title="Active Agents"
           value={metrics.activeAgents}
-          change="+1"
-          changeType="positive"
+          change="" // Removed placeholder change
+          changeType="none"
           icon="🤖"
-          tooltip="Number of AI agents currently active for your business."
+          tooltip="Number of AI agents currently active for your business. (Placeholder)"
         />
       </div>
 

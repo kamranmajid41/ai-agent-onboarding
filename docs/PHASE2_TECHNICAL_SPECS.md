@@ -28,29 +28,49 @@ Phase 2 delivers a robust, accessible, and modern AI Agent Self-Onboarding Platf
 - MetricsCard and all dashboard tooltips use React portal for unclipped display.
 - Settings: Section headers and all fields have tooltips.
 
-## 4. UI/UX & Accessibility
+## 4. Backend Core Functionality (Milestone 3 Additions)
+
+### 4.1 File Content Extraction
+- Supports text extraction from uploaded PDF, DOCX, and plain text files.
+- Utilizes `pdf-parse` for PDFs and `mammoth` for DOCX files to extract raw text content.
+- Integrates with AWS S3 for secure file storage.
+
+### 4.2 Web Content Acquisition
+- **Web Crawling**: Implements `/api/files/crawl` endpoint to fetch and extract text content from specified URLs using `axios` and `cheerio`.
+- **Document Link Fetching**: Provides `/api/files/doclink` endpoint to retrieve content from public document URLs (e.g., Google Docs, Notion).
+
+### 4.3 AI Integration
+- Integrates with OpenAI API for generating AI agent responses via `backend/src/services/openaiService.js`.
+- Includes stubs for future GoHighLevel API interactions in `backend/src/services/goHighLevelService.js`.
+- Utilizes onboarding data (niche, goals, tone) to construct prompts for the AI agent.
+
+### 4.4 Chat Core Logic
+- The `POST /api/agents/chat` endpoint handles user messages, integrates with OpenAI for responses, and logs conversations.
+- Facilitates real-time communication between users and the AI agent.
+
+## 5. UI/UX & Accessibility
 
 - Unified dark theme via Tailwind CSS and global styles.
 - Professional icons (e.g., GiBrain) throughout.
 - Even spacing in all forms and layouts.
 - Responsive and accessible (keyboard navigation, screen reader support, high contrast).
 
-## 5. Error Handling
+## 6. Error Handling
 
 - All forms and onboarding steps display inline error messages.
 - Backend returns clear error messages for API failures.
 
-## 6. State Management
+## 7. State Management
 
 - React Context for authentication and onboarding state.
 - Modular, colocated state logic.
 
-## 7. Tooltips
+## 8. Tooltips
 
 - All fields and section headers have tooltips (info icon), implemented via a reusable Tooltip component with React portal for unclipped display.
 - Consistent, visually appealing tooltips across the app.
 
-## 8. Code Quality & Documentation
+## 9. Code Quality & Documentation
 
 - Modular, reusable components.
 - ES6+ syntax and functional components.
@@ -58,4 +78,4 @@ Phase 2 delivers a robust, accessible, and modern AI Agent Self-Onboarding Platf
 
 ---
 
-_Last updated: PHASE 2 completion_
+_Last updated: PHASE 3 completion_

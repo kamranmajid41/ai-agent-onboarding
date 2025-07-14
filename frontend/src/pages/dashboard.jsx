@@ -61,10 +61,12 @@ export default function Dashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [metrics, setMetrics] = useState({
-    totalConversations: 1247,
-    avgResponseTime: '2.3s',
-    satisfactionRate: 94,
-    activeAgents: 3
+    totalConversations: 0,
+    totalMessages: 0,
+    averageMessageLength: 0,
+    avgResponseTime: 'N/A',
+    satisfactionRate: 'N/A',
+    activeAgents: 0 // This remains a placeholder unless we have a backend way to calculate it
   });
   const [onboardingData, setOnboardingData] = useState({});
 
@@ -75,7 +77,13 @@ export default function Dashboard() {
     email: '',
     companyName: '',
     companyWebsite: '',
-    onboardingData: { step1: {}, step2: {}, step3: {}, step4: {}, step5: {} },
+    onboardingData: { 
+      step1: {},
+      step2: { files: [] }, // Initialize files as an empty array
+      step3: {},
+      step4: {},
+      step5: {}
+    },
     agentName: 'AI Assistant',
     welcomeMessage: 'Hello! How can I help you today?',
     fallbackMessage: "I'll connect you with a human representative shortly.",
@@ -116,9 +124,49 @@ export default function Dashboard() {
         fallbackMessage: user.settings?.fallbackMessage || DEFAULT_SETTINGS.fallbackMessage,
         businessHours: user.settings?.businessHours || DEFAULT_SETTINGS.businessHours,
         integrations: user.integrations || DEFAULT_SETTINGS.integrations,
-        onboardingData: user.onboardingData || DEFAULT_SETTINGS.onboardingData
+        onboardingData: {
+          ...DEFAULT_SETTINGS.onboardingData,
+          ...user.onboardingData,
+          step2: {
+            ...(user.onboardingData?.step2 || {}),
+            files: Array.isArray(user.onboardingData?.step2?.files) ? user.onboardingData.step2.files : []
+          }
+        }
       }));
     }
+  }, [user]);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      if (!user) return;
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/metrics`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setMetrics(prevMetrics => ({
+          ...prevMetrics,
+          totalConversations: data.metrics.totalConversations,
+          totalMessages: data.metrics.totalMessages,
+          averageMessageLength: data.metrics.averageMessageLength || 0, // Ensure it's a number
+          avgResponseTime: data.metrics.avgResponseTime,
+          satisfactionRate: data.metrics.satisfactionRate,
+        }));
+      } catch (error) {
+        console.error("Error fetching metrics:", error);
+        setToastMessage('Failed to load metrics.');
+        setToastType('error');
+        setShowToast(true);
+      }
+    };
+
+    fetchMetrics();
   }, [user]);
 
   const handleLogout = async () => {
@@ -164,7 +212,13 @@ export default function Dashboard() {
           gdpr: settings.gdpr
         },
         integrations: settings.integrations,
-        onboardingData: settings.onboardingData
+        onboardingData: {
+          ...settings.onboardingData,
+          step2: {
+            ...settings.onboardingData.step2,
+            files: (settings.onboardingData.step2?.files || []).filter(file => typeof file === 'string')
+          }
+        }
       };
       // Call the backend API to update user profile
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
@@ -292,7 +346,18 @@ export default function Dashboard() {
         {/* Main Content Area */}
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="space-y-6">
-            {activeTab === 'overview' && <DashboardOverview />}
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                <DashboardOverview 
+                  user={user}
+                  metrics={metrics}
+                  onboardingData={onboardingData}
+                  getOnboardingProgress={getOnboardingProgress}
+                  getStepTitle={getStepTitle}
+                  setActiveTab={setActiveTab}
+                />
+              </div>
+            )}
 
           {activeTab === 'onboarding' && (
             <DashboardOnboarding 
@@ -378,7 +443,9 @@ export default function Dashboard() {
           )}
 
           {activeTab === 'analytics' && (
-            <DashboardAnalytics />
+            <div className="space-y-6">
+              <DashboardAnalytics metrics={metrics} />
+            </div>
           )}
 
           {activeTab === 'settings' && (
@@ -395,8 +462,9 @@ export default function Dashboard() {
               handleReset={handleReset}
             />
           )}
-        </main>
-      </div>
-    </ProtectedRoute>
-  );
+        </div>
+      </main>
+    </div>
+  </ProtectedRoute>
+);
 } 

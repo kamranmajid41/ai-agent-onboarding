@@ -17,14 +17,18 @@ This platform enables users to onboard AI agents through a modern, multi-step wi
 - **Error Handling**: Inline error messages for all forms and onboarding steps.
 - **State Management**: Context-based authentication and onboarding state.
 - **Modern UI**: Professional icons, even spacing, and unified design language.
+- **File Content Extraction**: Extracts text from PDF, DOCX, and plain text files for AI processing.
+- **Web Content Acquisition**: Crawls websites and fetches content from public document links for AI context.
+- **AI Integration**: Integrates with OpenAI for advanced AI capabilities and includes stubs for GoHighLevel API interactions.
+- **Chat Core Logic**: Enables real-time communication with the AI agent.
 
 ---
 
 ## Tech Stack
 
 - **Frontend**: React, Next.js, Tailwind CSS
-- **Backend**: Node.js, Express
-- **Database**: (Specify if used)
+- **Backend**: Node.js, Express, MongoDB (Mongoose ORM), JWT for authentication
+- **Database**: MongoDB
 
 ---
 
@@ -33,28 +37,52 @@ This platform enables users to onboard AI agents through a modern, multi-step wi
 ### Prerequisites
 - Node.js (v16+ recommended)
 - npm or yarn
+- MongoDB Atlas account (for cloud database) or local MongoDB instance
+- AWS S3 bucket (for file uploads)
+- OpenAI API Key
+
+### Environment Variables
+
+Create a `.env` file in both `backend/` and `frontend/` directories. Refer to `env.example` (if present) for required variables.
+
+**Backend (.env example):**
+```
+PORT=3001
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRE=30d
+OPENAI_API_KEY=your_openai_api_key
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+AWS_REGION=your_aws_region
+AWS_S3_BUCKET=your_s3_bucket_name
+CLIENT_URL=http://localhost:3000
+```
+
+**Frontend (.env.local example - Next.js uses .env.local for client-side environment variables):**
+```
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api
+```
 
 ### Setup
 
 #### Backend
 ```bash
 cd backend
-cp env.example .env
 npm install
-npm run dev
+npm start
 ```
 
 #### Frontend
 ```bash
 cd frontend
-cp env.example .env
 npm install
 npm run dev
 ```
 
 ### Access
 - Frontend: http://localhost:3000
-- Backend: http://localhost:5000
+- Backend: http://localhost:3001
 
 ---
 
@@ -92,6 +120,7 @@ npm run dev
 - All forms and onboarding steps have inline error handling and accessibility features.
 - Dashboard and onboarding state managed via React Context.
 - All documentation is up to date as of PHASE 2.
+- **Milestone 3 Updates**: Backend now supports file uploads (PDF, DOCX, TXT), web scraping, and document link ingestion. AI integration with OpenAI API is implemented for chat, and GoHighLevel API stubs are in place.
 
 ---
 

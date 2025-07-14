@@ -215,7 +215,10 @@ exports.updateProfile = async (req, res) => {
     const fieldsToUpdate = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      company: req.body.company
+      company: req.body.company,
+      onboardingData: req.body.onboardingData,
+      settings: req.body.settings,
+      integrations: req.body.integrations,
     };
 
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {

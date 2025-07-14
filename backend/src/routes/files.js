@@ -37,11 +37,15 @@ const S3_BUCKET = process.env.AWS_S3_BUCKET;
 // Upload endpoint
 router.post('/upload', protect, upload.single('file'), async (req, res) => {
   try {
+    console.log('[/api/files/upload] File upload request received.');
     if (!req.file) {
+      console.log('[/api/files/upload] No file found in request.');
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
     const ext = path.extname(req.file.originalname).toLowerCase();
     const key = `uploads/${req.user.id}/${uuidv4()}${ext}`;
+
+    console.log('[/api/files/upload] Attempting S3 upload...');
     // Upload to S3
     const s3Res = await s3.upload({
       Bucket: S3_BUCKET,
@@ -50,20 +54,28 @@ router.post('/upload', protect, upload.single('file'), async (req, res) => {
       ContentType: req.file.mimetype,
       ACL: 'private'
     }).promise();
+    console.log('[/api/files/upload] S3 Upload successful:', s3Res.Location);
+
     // Extract text from file
-    const extractedText = await filesController.extractTextFromFile(req.file.buffer, req.file.originalname);
+    console.log('[/api/files/upload] Attempting text extraction...');
+    const extractedText = await filesController.extractTextFromFile(req.file.buffer, req.file.mimetype); // Corrected mimetype argument
+    console.log('[/api/files/upload] Text extraction complete. Length:', extractedText.length);
+
     // Save metadata
+    console.log('[/api/files/upload] Attempting to save asset to DB...');
     const asset = await UploadedAsset.create({
       user: req.user.id,
       fileUrl: s3Res.Location,
       originalName: req.file.originalname,
       fileType: req.file.mimetype,
       fileSize: req.file.size,
-      extractedText
+      extractedText,
+      source: 'file_upload',
     });
+    console.log('[/api/files/upload] Asset saved to DB:', asset._id);
     res.status(201).json({ success: true, asset });
   } catch (err) {
-    console.error('File upload error:', err);
+    console.error('[/api/files/upload] File upload error:', err);
     res.status(500).json({ success: false, message: 'File upload failed', error: err.message });
   }
 });
@@ -73,31 +85,36 @@ router.post('/upload', protect, upload.single('file'), async (req, res) => {
 // @access  Private
 router.post('/crawl', protect, async (req, res) => {
   const { url } = req.body;
+  console.log('[/api/files/crawl] Web crawl request received for URL:', url);
 
   if (!url) {
+    console.log('[/api/files/crawl] URL is missing.');
     return res.status(400).json({ success: false, message: 'URL is required' });
   }
 
   try {
+    console.log('[/api/files/crawl] Fetching URL content...');
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
     // Extract text from common elements, you might want to refine this
     const extractedText = $('p, h1, h2, h3, h4, h5, h6, li, span').text();
+    console.log('[/api/files/crawl] Content extracted. Length:', extractedText.length);
 
     // Save the crawled content as an uploaded asset (optional, but useful for agent context)
+    console.log('[/api/files/crawl] Attempting to save crawled content to DB...');
     const newAsset = new UploadedAsset({
       user: req.user.id,
-      fileName: url,
+      originalName: url, // Renamed from fileName to originalName for consistency
       fileType: 'text/html',
-      s3Url: '', // No S3 URL for crawled content directly
       extractedText: extractedText,
       source: 'web_crawl',
     });
     await newAsset.save();
+    console.log('[/api/files/crawl] Crawled content saved to DB:', newAsset._id);
 
     res.json({ success: true, msg: 'Web content crawled and saved', extractedText });
   } catch (err) {
-    console.error(err.message);
+    console.error('[/api/files/crawl] Web crawl error:', err.message);
     res.status(500).json({ success: false, message: 'Server Error', error: err.message });
   }
 });
@@ -107,30 +124,35 @@ router.post('/crawl', protect, async (req, res) => {
 // @access  Private
 router.post('/doclink', protect, async (req, res) => {
   const { url } = req.body;
+  console.log('[/api/files/doclink] Document link request received for URL:', url);
 
   if (!url) {
+    console.log('[/api/files/doclink] URL is missing.');
     return res.status(400).json({ success: false, message: 'URL is required' });
   }
 
   try {
+    console.log('[/api/files/doclink] Fetching document content...');
     const response = await axios.get(url);
     // For document links, we'll try to extract text directly from the response
     // This might need more sophisticated parsing based on the document type
     const extractedText = response.data; // This is a simplistic approach
+    console.log('[/api/files/doclink] Content extracted. Length:', extractedText.length);
 
+    console.log('[/api/files/doclink] Attempting to save doclink content to DB...');
     const newAsset = new UploadedAsset({
       user: req.user.id,
-      fileName: url,
-      fileType: 'text/plain', // Assuming plain text for now, can be improved
-      s3Url: '', // No S3 URL for doclink content directly
+      originalName: url, // Renamed from fileName to originalName for consistency
+      fileType: response.headers['content-type'] || 'text/plain', // Get mimetype from response headers
       extractedText: extractedText,
       source: 'doc_link',
     });
     await newAsset.save();
+    console.log('[/api/files/doclink] Doclink content saved to DB:', newAsset._id);
 
     res.json({ success: true, msg: 'Document link content fetched and saved', extractedText });
   } catch (err) {
-    console.error(err.message);
+    console.error('[/api/files/doclink] Document link error:', err.message);
     res.status(500).json({ success: false, message: 'Server Error', error: err.message });
   }
 });

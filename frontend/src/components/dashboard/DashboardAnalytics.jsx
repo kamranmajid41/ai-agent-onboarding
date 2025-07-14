@@ -4,29 +4,29 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import TooltipComponent from '../ui/Tooltip';
 
-export default function DashboardAnalytics() {
-  // Mock analytics data
+export default function DashboardAnalytics({ metrics }) {
+  // Mock analytics data (will eventually be replaced by more complex backend aggregation)
   const conversationData = [
-    { date: 'Mon', conversations: 120 },
-    { date: 'Tue', conversations: 200 },
-    { date: 'Wed', conversations: 150 },
-    { date: 'Thu', conversations: 278 },
-    { date: 'Fri', conversations: 189 },
-    { date: 'Sat', conversations: 239 },
-    { date: 'Sun', conversations: 349 },
+    { date: 'Mon', conversations: metrics.totalConversations > 0 ? metrics.totalConversations / 7 : 0 },
+    { date: 'Tue', conversations: metrics.totalConversations > 0 ? metrics.totalConversations / 7 * 1.2 : 0 },
+    { date: 'Wed', conversations: metrics.totalConversations > 0 ? metrics.totalConversations / 7 * 0.8 : 0 },
+    { date: 'Thu', conversations: metrics.totalConversations > 0 ? metrics.totalConversations / 7 * 1.5 : 0 },
+    { date: 'Fri', conversations: metrics.totalConversations > 0 ? metrics.totalConversations / 7 * 1.1 : 0 },
+    { date: 'Sat', conversations: metrics.totalConversations > 0 ? metrics.totalConversations / 7 * 0.9 : 0 },
+    { date: 'Sun', conversations: metrics.totalConversations || 0 },
   ];
 
   const satisfactionData = [
-    { name: 'Satisfied', value: 82 },
-    { name: 'Neutral', value: 10 },
-    { name: 'Unsatisfied', value: 8 },
+    { name: 'Satisfied', value: metrics.satisfactionRate !== 'N/A' ? metrics.satisfactionRate : 82 },
+    { name: 'Neutral', value: metrics.satisfactionRate !== 'N/A' ? (100 - metrics.satisfactionRate) / 2 : 10 },
+    { name: 'Unsatisfied', value: metrics.satisfactionRate !== 'N/A' ? (100 - metrics.satisfactionRate) / 2 : 8 },
   ];
 
   const channelData = [
-    { name: 'Web', value: 400 },
-    { name: 'SMS', value: 300 },
-    { name: 'Facebook', value: 200 },
-    { name: 'WhatsApp', value: 100 },
+    { name: 'Web', value: metrics.totalConversations > 0 ? metrics.totalConversations * 0.4 : 0 },
+    { name: 'SMS', value: metrics.totalConversations > 0 ? metrics.totalConversations * 0.3 : 0 },
+    { name: 'Facebook', value: metrics.totalConversations > 0 ? metrics.totalConversations * 0.2 : 0 },
+    { name: 'WhatsApp', value: metrics.totalConversations > 0 ? metrics.totalConversations * 0.1 : 0 },
   ];
 
   const COLORS = ['#34d399', '#fbbf24', '#f87171', '#60a5fa'];
@@ -37,9 +37,27 @@ export default function DashboardAnalytics() {
         <div className="p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Analytics Dashboard</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Conversations Over Time */}
+            {/* Total Conversations */}
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Conversations Over Time <Tooltip text="Shows the number of conversations your AI agent handled each day."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">Total Conversations <Tooltip text="Total number of conversations handled by your AI agent."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
+              <p className="text-5xl font-bold text-primary-400 mb-4">{metrics.totalConversations}</p>
+            </div>
+
+            {/* Total Messages */}
+            <div>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">Total Messages <Tooltip text="Total number of messages exchanged."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
+              <p className="text-5xl font-bold text-accent-400 mb-4">{metrics.totalMessages}</p>
+            </div>
+
+            {/* Average Message Length */}
+            <div>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">Average Message Length <Tooltip text="Average character length of messages."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
+              <p className="text-5xl font-bold text-green-400 mb-4">{metrics.averageMessageLength} chars</p>
+            </div>
+
+            {/* Conversations Over Time (using derived mock data for now) */}
+            <div>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">Conversations Over Time <Tooltip text="Shows the number of conversations your AI agent handled each day. (Derived from total conversations for demonstration)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={conversationData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -51,27 +69,31 @@ export default function DashboardAnalytics() {
               </ResponsiveContainer>
             </div>
 
-            {/* Satisfaction Rate Pie */}
+            {/* Satisfaction Rate Pie (using placeholder for now) */}
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Satisfaction Rate <Tooltip text="Breakdown of user satisfaction with your AI agent."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <ResponsiveContainer width="100%" height={220}>
-                <PieChart>
-                  <Pie data={satisfactionData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label>
-                    {satisfactionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">Satisfaction Rate <Tooltip text="Breakdown of user satisfaction with your AI agent. (Requires additional data collection)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
+              {metrics.satisfactionRate !== 'N/A' ? (
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={satisfactionData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label>
+                      {satisfactionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="text-center text-gray-400 mt-8">
+                  <p>Data not available. Implement satisfaction feedback to populate this metric.</p>
+                </div>
+              )}
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-            {/* Channel Breakdown Bar */}
+            {/* Channel Breakdown Bar (using derived mock data for now) */}
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Channel Breakdown <Tooltip text="Distribution of conversations by communication channel."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">Channel Breakdown <Tooltip text="Distribution of conversations by communication channel. (Derived from total conversations for demonstration)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={channelData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -87,31 +109,12 @@ export default function DashboardAnalytics() {
               </ResponsiveContainer>
             </div>
 
-            {/* Top Intents/Questions */}
+            {/* Top Intents/Questions (placeholder) */}
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Top Intents / Questions <Tooltip text="Most common user questions or intents."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <ul className="divide-y divide-surface-600 bg-surface-800 rounded-lg p-4 text-gray-200">
-                <li className="py-2 flex justify-between">
-                  <span>Book Appointment</span>
-                  <span className="font-semibold text-primary-600">124</span>
-                </li>
-                <li className="py-2 flex justify-between">
-                  <span>Pricing Inquiry</span>
-                  <span className="font-semibold text-primary-600">98</span>
-                </li>
-                <li className="py-2 flex justify-between">
-                  <span>Business Hours</span>
-                  <span className="font-semibold text-primary-600">76</span>
-                </li>
-                <li className="py-2 flex justify-between">
-                  <span>Location</span>
-                  <span className="font-semibold text-primary-600">54</span>
-                </li>
-                <li className="py-2 flex justify-between">
-                  <span>Speak to Human</span>
-                  <span className="font-semibold text-primary-600">39</span>
-                </li>
-              </ul>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">Top Intents / Questions <Tooltip text="Most common user questions or intents. (Requires advanced NLP processing of conversation logs)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
+              <div className="text-center text-gray-400 mt-8">
+                <p>Data not available. Implement advanced NLP for intent recognition to populate this metric.</p>
+              </div>
             </div>
           </div>
         </div>

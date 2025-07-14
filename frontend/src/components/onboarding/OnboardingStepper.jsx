@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Button, Input, Badge } from '../ui';
-import { AiOutlineSave, AiOutlineUpload, AiOutlineLink, AiOutlineUser, AiOutlineRobot, AiOutlinePhone, AiOutlineGlobal, AiOutlineInfoCircle } from 'react-icons/ai';
+import { AiOutlineSave, AiOutlineUpload, AiOutlineLink, AiOutlineUser, AiOutlineRobot, AiOutlinePhone, AiOutlineGlobal, AiOutlineInfoCircle, AiOutlineFile, AiOutlineClose } from 'react-icons/ai';
 import Tooltip from '../ui/Tooltip';
 
 const INDUSTRIES = [
@@ -33,19 +33,170 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [showTooltip, setShowTooltip] = useState('');
   const [errors, setErrors] = useState({});
+  const [uploading, setUploading] = useState(false); // New state for tracking file upload progress
+  const [crawling, setCrawling] = useState(false); // New state for tracking web crawl progress
+  const [fetchingDocLink, setFetchingDocLink] = useState(false); // New state for tracking doc link fetch progress
 
-  const handleFileUpload = (e, stepKey) => {
-    const files = Array.from(e.target.files || []);
+  const handleFileUpload = async (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length === 0) return;
+
+    setUploading(true);
+    const uploadedFileNames = [...(settings.onboardingData.step2?.files || [])];
+
+    try {
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/files/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload ${file.name}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // Assuming data.asset.fileUrl contains the URL of the uploaded file
+        if (data.success && data.asset?.fileUrl) {
+          uploadedFileNames.push(data.asset.fileUrl);
+        } else {
+          console.error('Upload response missing fileUrl or success was false:', data);
+          // Handle partial failure or inform user
+        }
+      }
+      setSettings(prev => ({
+        ...prev,
+        onboardingData: {
+          ...prev.onboardingData,
+          step2: {
+            ...prev.onboardingData.step2,
+            files: uploadedFileNames
+          }
+        }
+      }));
+    } catch (error) {
+      console.error('Error during file upload:', error);
+      // You might want to display a toast message to the user here
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveFile = (fileToRemove) => {
     setSettings(prev => ({
       ...prev,
       onboardingData: {
         ...prev.onboardingData,
-        [stepKey]: {
-          ...prev.onboardingData[stepKey],
-          files: files
+        step2: {
+          ...prev.onboardingData.step2,
+          files: prev.onboardingData.step2.files.filter(file => file !== fileToRemove)
         }
       }
     }));
+  };
+
+  const handleCrawlWebsite = async () => {
+    const url = settings.onboardingData.step2?.crawlUrl;
+    if (!url) {
+      setErrors(prev => ({ ...prev, crawlUrl: 'Website URL to Crawl is required.' }));
+      return;
+    }
+
+    setCrawling(true);
+    setErrors(prev => ({ ...prev, crawlUrl: undefined })); // Clear previous error
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/files/crawl`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to crawl website');
+      }
+
+      const data = await response.json();
+      console.log('Crawl successful:', data);
+      // Optionally, you could save the extractedText to another part of onboardingData
+      // For now, we rely on the backend to save it to UploadedAsset
+    } catch (error) {
+      console.error('Error during website crawl:', error);
+      setErrors(prev => ({ ...prev, crawlUrl: error.message }));
+    } finally {
+      setCrawling(false);
+    }
+  };
+
+  const handleAddDocLink = async () => {
+    const url = settings.onboardingData.step2?.newDocLink; // Assuming a new input for single doc links
+    if (!url) {
+      setErrors(prev => ({ ...prev, newDocLink: 'Document link URL is required.' }));
+      return;
+    }
+
+    setFetchingDocLink(true);
+    setErrors(prev => ({ ...prev, newDocLink: undefined })); // Clear previous error
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/files/doclink`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch document link content');
+      }
+
+      const data = await response.json();
+      console.log('Doc link fetch successful:', data);
+
+      // Add the fetched URL to the files array in onboardingData.step2
+      setSettings(prev => ({
+        ...prev,
+        onboardingData: {
+          ...prev.onboardingData,
+          step2: {
+            ...prev.onboardingData.step2,
+            // Ensure files array exists and append the new URL
+            files: [...(prev.onboardingData.step2?.files || []), url]
+          }
+        }
+      }));
+
+      // Clear the newDocLink input after successful fetch
+      setSettings(prev => ({
+        ...prev,
+        onboardingData: {
+          ...prev.onboardingData,
+          step2: {
+            ...prev.onboardingData.step2,
+            newDocLink: ''
+          }
+        }
+      }));
+
+    } catch (error) {
+      console.error('Error during document link fetch:', error);
+      setErrors(prev => ({ ...prev, newDocLink: error.message }));
+    } finally {
+      setFetchingDocLink(false);
+    }
   };
 
   const handleSocialLinkChange = (platform, value) => {
@@ -330,7 +481,7 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
                     type="file"
                     multiple
                     accept=".pdf,.doc,.docx,.txt,.csv"
-                    onChange={(e) => handleFileUpload(e, 'step2')}
+                    onChange={handleFileUpload}
                     className="hidden"
                     id="file-upload"
                   />
@@ -347,7 +498,14 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
                       {settings.onboardingData.step2.files.map((file, idx) => (
                         <li key={idx} className="text-sm text-gray-300 flex items-center gap-2">
                           <AiOutlineFile className="w-4 h-4" />
-                          {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                          {file}
+                          <button
+                            onClick={() => handleRemoveFile(file)}
+                            className="ml-2 text-error-400 hover:text-error-300"
+                            title="Remove file"
+                          >
+                            <AiOutlineClose className="w-4 h-4" />
+                          </button>
                         </li>
                       ))}
                     </ul>
@@ -375,6 +533,15 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
                     }))} 
                     placeholder="https://yourbusiness.com"
                   />
+                  {errors.crawlUrl && <div className="text-error-400 text-xs mt-1">{errors.crawlUrl}</div>}
+                  <Button 
+                    onClick={handleCrawlWebsite}
+                    loading={crawling}
+                    disabled={crawling}
+                    className="btn-primary mt-2"
+                  >
+                    {crawling ? 'Crawling...' : 'Crawl Website'}
+                  </Button>
                   <div className="flex items-center gap-4">
                     <label className="flex items-center">
                       <input
@@ -385,17 +552,48 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
                           onboardingData: { 
                             ...prev.onboardingData, 
                             step2: { 
-                              ...prev.onboardingData.step2, 
-                              crawl: e.target.checked 
+                              ...prev.onboardingData.step2,
+                              crawl: e.target.checked,
+                              // If unchecking, clear the crawlUrl to prevent re-crawling unintentionally
+                              crawlUrl: e.target.checked ? prev.onboardingData.step2?.crawlUrl : ''
                             } 
                           } 
                         }))}
                         className="rounded border-surface-600 text-primary-600 focus:ring-primary-500 bg-surface-800"
                       />
-                      <span className="ml-2 text-gray-300">Crawl website for content</span>
+                      <span className="ml-2 text-gray-300">Enable automatic website crawling</span>
                     </label>
                   </div>
                 </div>
+              </div>
+
+              {/* Document Link Entry */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-white">Add Document Link</h4>
+                <Input 
+                  label={<span>Public Document URL <Tooltip text="Enter a public URL to a document (e.g., Google Docs, public Notion page) to extract its content."><AiOutlineInfoCircle className="inline w-4 h-4 text-primary-200 ml-1 cursor-pointer" /></Tooltip></span>} 
+                  value={settings.onboardingData.step2?.newDocLink || ''} 
+                  onChange={e => setSettings(prev => ({
+                    ...prev,
+                    onboardingData: {
+                      ...prev.onboardingData,
+                      step2: {
+                        ...prev.onboardingData.step2,
+                        newDocLink: e.target.value
+                      }
+                    }
+                  }))}
+                  placeholder="https://docs.google.com/document/d/.../pub"
+                />
+                {errors.newDocLink && <div className="text-error-400 text-xs mt-1">{errors.newDocLink}</div>}
+                <Button 
+                  onClick={handleAddDocLink}
+                  loading={fetchingDocLink}
+                  disabled={fetchingDocLink}
+                  className="btn-primary mt-2"
+                >
+                  {fetchingDocLink ? 'Adding...' : 'Add Document Link'}
+                </Button>
               </div>
 
               {/* Manual Content Entry */}
