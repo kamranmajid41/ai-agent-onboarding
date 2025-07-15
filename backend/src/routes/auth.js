@@ -8,7 +8,8 @@ const {
   updatePassword,
   setupAdmin,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  updateGoHighLevelIntegration
 } = require('../controllers/authController');
 
 const { protect } = require('../middleware/auth');
@@ -29,5 +30,6 @@ router.get('/me', protect, getMe);
 router.post('/logout', protect, logout);
 router.put('/profile', protect, updateProfile);
 router.put('/password', protect, updatePassword);
+router.put('/gohighlevel-integration', protect, updateGoHighLevelIntegration);
 
 module.exports = router; 

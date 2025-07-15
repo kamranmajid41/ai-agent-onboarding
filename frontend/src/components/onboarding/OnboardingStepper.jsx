@@ -37,8 +37,7 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
   const [crawling, setCrawling] = useState(false); // New state for tracking web crawl progress
   const [fetchingDocLink, setFetchingDocLink] = useState(false); // New state for tracking doc link fetch progress
 
-  const handleFileUpload = async (e) => {
-    const selectedFiles = Array.from(e.target.files || []);
+  const processSelectedFiles = async (selectedFiles) => {
     if (selectedFiles.length === 0) return;
 
     setUploading(true);
@@ -62,12 +61,10 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
         }
 
         const data = await response.json();
-        // Assuming data.asset.fileUrl contains the URL of the uploaded file
         if (data.success && data.asset?.fileUrl) {
           uploadedFileNames.push(data.asset.fileUrl);
         } else {
           console.error('Upload response missing fileUrl or success was false:', data);
-          // Handle partial failure or inform user
         }
       }
       setSettings(prev => ({
@@ -82,10 +79,14 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
       }));
     } catch (error) {
       console.error('Error during file upload:', error);
-      // You might want to display a toast message to the user here
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleFileUpload = async (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    processSelectedFiles(selectedFiles);
   };
 
   const handleRemoveFile = (fileToRemove) => {
@@ -284,6 +285,24 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
     }
   };
 
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const selectedFiles = Array.from(e.dataTransfer.files || []);
+    processSelectedFiles(selectedFiles);
+  };
+
   return (
     <div className="space-y-6">
       <Card title="AI Agent Onboarding" subtitle="Complete all steps to set up your agent">
@@ -469,25 +488,25 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
               {/* File Upload */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-white">Upload Business Files <span className="text-error-400">*</span> <Tooltip text="Upload files that represent your business knowledge (PDF, DOCX, TXT, CSV)."><AiOutlineInfoCircle className="inline w-4 h-4 text-primary-200 ml-1 cursor-pointer" /></Tooltip></h4>
-                <div className="border-2 border-dashed border-surface-600 rounded-lg p-6 text-center">
-                  <AiOutlineUpload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-300 mb-2">
-                    Drag and drop files here, or click to browse
-                  </p>
-                  <p className="text-sm text-gray-400 mb-4">
-                    Supported formats: PDF, DOC, DOCX, TXT, CSV (Max 10MB each)
-                  </p>
+                <div
+                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${isDragOver ? 'border-primary-500 bg-surface-700/50' : 'border-surface-600/50'}`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => document.getElementById('file-upload-input').click()}
+                >
+                  <AiOutlineUpload className="w-12 h-12 mx-auto text-primary-400 mb-3" />
+                  <p className="text-white mb-2">Drag and drop files here, or click to browse</p>
+                  <p className="text-sm text-gray-400">Supported formats: PDF, DOC, DOCX, TXT, CSV (Max 10MB each)</p>
                   <input
+                    id="file-upload-input"
                     type="file"
                     multiple
                     accept=".pdf,.doc,.docx,.txt,.csv"
                     onChange={handleFileUpload}
                     className="hidden"
-                    id="file-upload"
                   />
-                  <label htmlFor="file-upload" className="btn-secondary cursor-pointer">
-                    Choose Files
-                  </label>
+                  <Button onClick={() => document.getElementById('file-upload-input').click()} className="mt-4">Choose Files</Button>
                 </div>
                 
                 {/* Uploaded Files List */}
@@ -1181,15 +1200,15 @@ export default function OnboardingStepper({ settings, setSettings, onSave, loadi
           </Button>
         </div>
 
-        {/* Save Button */}
-        <div className="mt-8 flex justify-end">
+        {/* Save Button (Removed to avoid redundancy) */}
+        {/* <div className="mt-8 flex justify-end">
           <Button onClick={onSave} loading={loading} disabled={loading} className="px-8">
             <div className="flex items-center">
               <AiOutlineSave className="w-4 h-4 mr-2" />
               Save Changes
             </div>
           </Button>
-        </div>
+        </div> */}
       </Card>
     </div>
   );

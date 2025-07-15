@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext'; // Import useAuth
 import { Card, Badge, Button, Input, Toast, Tooltip } from '../ui';
 import { 
   AiOutlineUser, 
   AiOutlineRobot, 
   AiOutlineBell, 
   AiOutlineApi, 
-  AiOutlineSecurityScan,
+  AiOutlineSecurityScan, 
   AiOutlineSave,
   AiOutlineExport,
   AiOutlineReload,
@@ -30,6 +31,7 @@ export default function DashboardSettings({
   handleReset 
 }) {
   const [settingsTab, setSettingsTab] = useState('account');
+  const { logout, deleteUser } = useAuth(); // Destructure deleteUser from useAuth
 
   const SETTINGS_TABS = [
     { id: 'account', label: 'Account', icon: AiOutlineUser },
@@ -39,6 +41,20 @@ export default function DashboardSettings({
     { id: 'integrations', label: 'Integrations', icon: AiOutlineApi },
     { id: 'security', label: 'Security', icon: AiOutlineSecurityScan }
   ];
+
+  const handleDeleteAccount = async () => {
+    if (confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
+      try {
+        await deleteUser();
+        // Optionally, redirect to login or a confirmation page after deletion
+        // router.push('/login'); // Assuming you have a router
+      } catch (error) {
+        setToastMessage('Failed to delete account. Please try again.');
+        setToastType('error');
+        setShowToast(true);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
@@ -207,35 +223,72 @@ export default function DashboardSettings({
             </Card>
           </div>
         )}
-
         {/* Integrations Tab */}
         {settingsTab === 'integrations' && (
           <div className="space-y-6">
-            <Card title="Third-Party Integrations" subtitle="Connect your AI agent with other services">
+            <Card title="GoHighLevel Integration" subtitle="Connect your GoHighLevel account to manage contacts and campaigns">
               <div className="space-y-4">
-                {Object.entries(settings.integrations).map(([key, integration]) => (
-                  <div key={key} className="border border-surface-600/50 rounded-lg p-4 bg-surface-800/50">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 flex items-center justify-center">
-                          {key === 'goHighLevel' && <AiOutlineLink className="w-6 h-6 text-primary-400" />}
-                          {key === 'openai' && <AiOutlineRobot className="w-6 h-6 text-primary-400" />}
-                          {key === 'googleAnalytics' && <AiOutlineBarChart className="w-6 h-6 text-primary-400" />}
-                          {key === 'zapier' && <AiOutlineThunderbolt className="w-6 h-6 text-primary-400" />}
-                        </div>
-                        <div>
-                          <div className="font-medium text-white capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
-                          <div className="text-sm text-gray-300">{integration.connected ? 'Connected' : 'Not connected'}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={integration.connected ? 'success' : 'warning'}>{integration.connected ? 'Connected' : 'Disconnected'}</Badge>
-                        <Button variant="outline" size="sm" onClick={() => setSettings(prev => ({ ...prev, integrations: { ...prev.integrations, [key]: { ...prev.integrations[key], connected: !prev.integrations[key].connected } } }))}>{integration.connected ? 'Disconnect' : 'Connect'}</Button>
-                      </div>
+                <div className="flex items-center justify-between p-4 bg-surface-700/50 rounded-lg border border-surface-600/50">
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <div className="font-medium text-white">GoHighLevel Status</div>
+                      <div className="text-sm text-gray-300">{settings.integrations.goHighLevel.connected ? 'Connected' : 'Disconnected'}</div>
                     </div>
-                    {/* Integration details editing (API keys, etc.) can be added here */}
+                    <Tooltip text="Toggle to connect or disconnect your GoHighLevel account.">
+                      <AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" />
+                    </Tooltip>
                   </div>
-                ))}
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={settings.integrations.goHighLevel.connected}
+                      onChange={() => setSettings(prev => ({
+                        ...prev,
+                        integrations: {
+                          ...prev.integrations,
+                          goHighLevel: {
+                            ...prev.integrations.goHighLevel,
+                            connected: !prev.integrations.goHighLevel.connected
+                          }
+                        }
+                      }))}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-surface-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                  </label>
+                </div>
+                <Input 
+                  label="API Key"
+                  value={settings.integrations.goHighLevel.apiKey}
+                  onChange={e => setSettings(prev => ({
+                    ...prev,
+                    integrations: {
+                      ...prev.integrations,
+                      goHighLevel: {
+                        ...prev.integrations.goHighLevel,
+                        apiKey: e.target.value
+                      }
+                    }
+                  }))}
+                  placeholder="Enter your GoHighLevel API Key"
+                  tooltip="Your GoHighLevel API Key for authentication."
+                />
+                <Input 
+                  label="Location ID"
+                  value={settings.integrations.goHighLevel.locationId}
+                  onChange={e => setSettings(prev => ({
+                    ...prev,
+                    integrations: {
+                      ...prev.integrations,
+                      goHighLevel: {
+                        ...prev.integrations.goHighLevel,
+                        locationId: e.target.value
+                      }
+                    }
+                  }))}
+                  placeholder="Enter your GoHighLevel Location ID"
+                  tooltip="Your GoHighLevel Location ID for specific business data."
+                />
               </div>
             </Card>
           </div>
@@ -314,7 +367,7 @@ export default function DashboardSettings({
                       <AiOutlineInfoCircle className="w-4 h-4 text-error-200 cursor-pointer" />
                     </Tooltip>
                   </div>
-                  <Button variant="outline" className="border-error-500 text-error-400 hover:bg-error-900/20"><AiOutlineDelete className="w-4 h-4 mr-2" />Delete</Button>
+                  <Button variant="outline" onClick={handleDeleteAccount} className="border-error-500 text-error-400 hover:bg-error-900/20"><AiOutlineDelete className="w-4 h-4 mr-2" />Delete</Button>
                 </div>
               </div>
             </Card>

@@ -160,6 +160,20 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  // Delete user function
+  const deleteUser = async () => {
+    try {
+      dispatch({ type: 'AUTH_START' }); // Indicate a process is starting
+      await authService.deleteUser();
+      if (typeof window !== 'undefined') localStorage.removeItem('token');
+      dispatch({ type: 'LOGOUT' }); // Log out after successful deletion
+    } catch (error) {
+      console.error('Delete user error:', error);
+      dispatch({ type: 'AUTH_FAILURE', payload: error.message });
+      throw error;
+    }
+  };
+
   // Clear error function
   const clearError = () => {
     dispatch({ type: 'CLEAR_ERROR' });
@@ -175,6 +189,8 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateUser,
+    deleteUser, // Expose deleteUser
+    updateGoHighLevelIntegration: authService.updateGoHighLevelIntegration, // Expose GoHighLevel integration update function
     clearError
   };
 

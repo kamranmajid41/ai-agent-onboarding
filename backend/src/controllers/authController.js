@@ -245,6 +245,57 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
+// @desc    Update GoHighLevel Integration settings
+// @route   PUT /api/auth/gohighlevel-integration
+// @access  Private
+exports.updateGoHighLevelIntegration = async (req, res) => {
+  try {
+    const { apiKey, locationId, connected } = req.body;
+
+    if (connected) {
+      // If trying to connect, verify API key and location ID
+      const goHighLevelService = require('../services/goHighLevelService');
+      const isValid = await goHighLevelService.testLocationAccess(apiKey, locationId);
+      if (!isValid) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid GoHighLevel API Key or Location ID. Please check your credentials.'
+        });
+      }
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    user.integrations.goHighLevel = {
+      apiKey,
+      locationId,
+      connected
+    };
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'GoHighLevel integration settings updated successfully',
+      integrations: user.integrations
+    });
+
+  } catch (error) {
+    console.error('Update GoHighLevel integration error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during GoHighLevel integration update'
+    });
+  }
+};
+
 // @desc    Update password
 // @route   PUT /api/auth/password
 // @access  Private

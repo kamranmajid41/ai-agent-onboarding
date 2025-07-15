@@ -76,6 +76,9 @@ router.post('/chat', protect, async (req, res) => {
 
     const agentResponse = await generateAgentResponse(prompt);
 
+    console.log('Message received:', message);
+    console.log('Agent response generated:', agentResponse);
+
     const newConversation = new ConversationLog({
       user: userId,
       agent: agentConfig.agentName || user.settings?.agentName || 'Default Agent',

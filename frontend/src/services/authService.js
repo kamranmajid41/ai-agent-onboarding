@@ -75,5 +75,24 @@ export const authService = {
       body: JSON.stringify(passwordData)
     });
     return handleResponse(response);
+  },
+
+  // Delete user account
+  async deleteUser() {
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Update GoHighLevel Integration settings
+  async updateGoHighLevelIntegration(integrationData) {
+    const response = await fetch(`${API_BASE_URL}/auth/gohighlevel-integration`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(integrationData)
+    });
+    return handleResponse(response);
   }
 }; 

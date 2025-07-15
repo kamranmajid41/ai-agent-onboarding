@@ -61,6 +61,7 @@ app.use('/api/files', require('./routes/files'));
 app.use('/api/agents', require('./routes/agents'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/gohighlevel', require('./routes/gohighlevel'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

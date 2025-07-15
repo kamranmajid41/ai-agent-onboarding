@@ -30,8 +30,8 @@ export default function Home() {
       <header className="flex items-center justify-between px-8 py-6 bg-surface-900/80 shadow-lg border-b border-surface-700">
         <div className="text-2xl font-bold text-primary-400">AI Agent Platform</div>
         <nav className="space-x-6 text-gray-200 font-medium">
-          <Link href="#features" className="nav-item">Features</Link>
-          <Link href="#contact" className="nav-item">Contact</Link>
+          {/* <Link href="#features" className="nav-item">Features</Link>
+          <Link href="#contact" className="nav-item">Contact</Link> */}
           <Link href="/auth/login" className="ml-4 px-5 py-2 btn-primary">Sign In</Link>
         </nav>
       </header>
@@ -44,13 +44,13 @@ export default function Home() {
         </p>
         <div className="flex flex-col md:flex-row gap-4 justify-center">
           <Link href="/auth/register" className="btn-primary px-8 py-3">Get Started Free</Link>
-          <a href="#demo" className="btn-secondary px-8 py-3 border border-primary-500 text-primary-300">Watch Demo</a>
+          {/* <a href="#demo" className="btn-secondary px-8 py-3 border border-primary-500 text-primary-300">Watch Demo</a> */}
         </div>
       </main>
 
       {/* Features Section */}
       <section id="features" className="py-16 bg-transparent">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-center justify-items-center">
           <div className="glass-dark p-6 rounded-xl shadow-xl">
             <div className="text-4xl mb-2">🧠</div>
             <div className="font-bold text-lg mb-1 text-primary-200">5-Step Smart Wizard</div>

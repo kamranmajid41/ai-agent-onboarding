@@ -420,14 +420,13 @@ export default function Dashboard() {
                   </div>
                 </div>
               </Card>
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">AI Agent Preview</h2>
+              {/* <Card className="p-6">
                 <ChatInterface
                   agentName={settings.agentName}
                   welcomeMessage={settings.welcomeMessage}
                   onSendMessage={handleAgentSendMessage}
                 />
-              </Card>
+              </Card> */}
             </div>
           )}
 
@@ -436,7 +435,11 @@ export default function Dashboard() {
               <Card className="card card-hover">
                 <div className="p-6">
                   <h3 className="text-lg font-semibold text-white mb-4">Live Chat Preview</h3>
-                  <ChatInterface onSendMessage={handleAgentSendMessage} />
+                  <ChatInterface 
+                    agentName={settings.agentName} // Pass the agentName from settings
+                    welcomeMessage={settings.welcomeMessage} // Pass the welcomeMessage from settings
+                    onSendMessage={handleAgentSendMessage} 
+                  />
                 </div>
               </Card>
             </div>
