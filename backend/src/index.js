@@ -23,7 +23,9 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-agent-
 app.use(helmet());
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://ai-agent-onboarding.vercel.app'
+  'https://ai-agent-onboarding.vercel.app',
+  'https://botslinger.ai',
+  'https://knowing-tax-production.up.railway.app'
 ];
 
 app.use(cors({
