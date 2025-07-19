@@ -140,7 +140,7 @@ export default function Dashboard() {
     const fetchMetrics = async () => {
       if (!user) return;
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/metrics`, {
+        const response = await fetch(`https://api.botslinger.ai/dashboard/metrics`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
@@ -221,7 +221,7 @@ export default function Dashboard() {
         }
       };
       // Call the backend API to update user profile
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+      const response = await fetch(`https://api.botslinger.ai/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -266,7 +266,7 @@ export default function Dashboard() {
 
   const handleAgentSendMessage = async (message) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/agents/chat`, {
+      const response = await fetch(`https://api.botslinger.ai/agents/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -313,7 +313,7 @@ export default function Dashboard() {
               <div className="flex items-center space-x-4">
                 <div className="text-sm text-gray-300">
                   Welcome back, <span className="text-primary-400 font-medium">{user?.firstName}</span>!
-                </div>
+            </div>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-surface-700 rounded-lg transition-all duration-300"
@@ -416,9 +416,9 @@ export default function Dashboard() {
                       </div>
                       <div className="font-semibold text-accent-300">Integration</div>
                       <div className="text-sm text-accent-400">Connected</div>
-                    </div>
-                  </div>
-                </div>
+              </div>
+            </div>
+          </div>
               </Card>
               {/* <Card className="p-6">
                 <ChatInterface
@@ -469,5 +469,5 @@ export default function Dashboard() {
       </main>
     </div>
   </ProtectedRoute>
-);
+  );
 } 

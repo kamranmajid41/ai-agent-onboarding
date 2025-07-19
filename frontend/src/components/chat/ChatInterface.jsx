@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AiOutlineSend, AiOutlineUser, AiOutlineRobot } from 'react-icons/ai';
+import { AiOutlineSend, AiOutlineUser, AiOutlineRobot, AiOutlineAudio } from 'react-icons/ai';
 import { Button } from '../ui';
 
 const ChatInterface = ({ 
@@ -21,6 +21,8 @@ const ChatInterface = ({
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -28,6 +30,45 @@ const ChatInterface = ({
 
   useEffect(() => {
     scrollToBottom();
+  }, [messages]);
+
+  // Voice Input: Speech-to-Text
+  useEffect(() => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInputValue((prev) => prev + (prev ? ' ' : '') + transcript);
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+    recognitionRef.current = recognition;
+  }, []);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) return;
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  // Voice Output: Text-to-Speech for AI messages
+  useEffect(() => {
+    if (messages.length < 1) return;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg.type === 'agent' && 'speechSynthesis' in window) {
+      const utter = new window.SpeechSynthesisUtterance(lastMsg.content);
+      utter.lang = 'en-US';
+      window.speechSynthesis.speak(utter);
+    }
   }, [messages]);
 
   const handleSendMessage = async () => {
@@ -155,6 +196,14 @@ const ChatInterface = ({
             disabled={disabled}
             className="flex-1 bg-surface-800 text-white border border-surface-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-500 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
+          <Button
+            onClick={handleMicClick}
+            disabled={disabled || isTyping}
+            className={`px-3 ${isListening ? 'bg-green-600' : ''}`}
+            title={isListening ? 'Listening...' : 'Speak'}
+          >
+            <AiOutlineAudio className="w-5 h-5" />
+          </Button>
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || disabled || isTyping}
