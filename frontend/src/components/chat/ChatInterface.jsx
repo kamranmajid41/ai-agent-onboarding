@@ -122,15 +122,15 @@ const ChatInterface = ({
   };
 
   return (
-    <div className={`flex flex-col h-96 bg-surface-800/50 rounded-lg border border-surface-600/50 ${className}`} {...props}>
+    <div className={`flex flex-col h-96 bg-surface-100 rounded-lg border border-surface-300 ${className}`} {...props}>
       {/* Chat Header */}
-      <div className="flex items-center gap-3 p-4 border-b border-surface-600/50">
-        <div className="w-8 h-8 bg-primary-900/50 rounded-full flex items-center justify-center">
-          <AiOutlineRobot className="w-4 h-4 text-primary-300" />
+      <div className="flex items-center gap-3 p-4 border-b border-surface-300">
+        <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+          <AiOutlineRobot className="w-4 h-4 text-primary-500" />
         </div>
         <div>
-          <span className="font-medium text-white">{agentName}</span>
-          <div className="text-xs text-green-400">Online</div>
+          <span className="font-medium text-surface-900">{agentName}</span>
+          <div className="text-xs text-success-600">Online</div>
         </div>
       </div>
 
@@ -142,15 +142,15 @@ const ChatInterface = ({
             className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {message.type === 'agent' && (
-              <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center flex-shrink-0 mr-3">
+              <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0 mr-3">
                 <AiOutlineRobot className="w-5 h-5 text-white" />
               </div>
             )}
             <div
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                 message.type === 'user'
-                  ? 'bg-primary-600 text-white rounded-br-none mr-3'
-                  : 'bg-surface-700 text-white border border-surface-600 rounded-bl-none'
+                  ? 'bg-primary-500 text-white rounded-br-none mr-3'
+                  : 'bg-surface-200 text-surface-900 border border-surface-300 rounded-bl-none'
               }`}
             >
               <div className="text-sm">{message.content}</div>
@@ -159,8 +159,8 @@ const ChatInterface = ({
               </div>
             </div>
             {message.type === 'user' && (
-              <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <AiOutlineUser className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-surface-300 rounded-full flex items-center justify-center flex-shrink-0">
+                <AiOutlineUser className="w-5 h-5 text-surface-900" />
               </div>
             )}
           </div>
@@ -185,7 +185,7 @@ const ChatInterface = ({
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-surface-600/50">
+      <div className="p-4 border-t border-surface-300">
         <div className="flex gap-2">
           <input
             type="text"
@@ -194,12 +194,12 @@ const ChatInterface = ({
             onKeyPress={handleKeyPress}
             placeholder="Type your message..."
             disabled={disabled}
-            className="flex-1 bg-surface-800 text-white border border-surface-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-500 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="flex-1 bg-surface-50 text-surface-900 border border-surface-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <Button
             onClick={handleMicClick}
             disabled={disabled || isTyping}
-            className={`px-3 ${isListening ? 'bg-green-600' : ''}`}
+            className={`px-3 ${isListening ? 'bg-success-600 text-white' : ''}`}
             title={isListening ? 'Listening...' : 'Speak'}
           >
             <AiOutlineAudio className="w-5 h-5" />

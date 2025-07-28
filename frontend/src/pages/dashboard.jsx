@@ -301,9 +301,9 @@ export default function Dashboard() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-dark">
+      <div className="min-h-screen bg-white">
         {/* Header */}
-        <header className="glass-dark border-b border-dark-600/50">
+        <header className="glass border-b border-surface-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               <div className="flex items-center space-x-4">
@@ -311,12 +311,12 @@ export default function Dashboard() {
                 <Badge variant="success" className="animate-pulse-slow">Live</Badge>
               </div>
               <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-300">
-                  Welcome back, <span className="text-primary-400 font-medium">{user?.firstName}</span>!
+                <div className="text-sm text-gray-600">
+                  Welcome back, <span className="text-primary-600 font-medium">{user?.firstName}</span>!
             </div>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-surface-700 rounded-lg transition-all duration-300"
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-primary-700 hover:bg-surface-100 rounded-lg transition-all duration-300"
                 >
                   Logout
                 </button>
@@ -326,13 +326,13 @@ export default function Dashboard() {
         </header>
 
         {/* Navigation Tabs */}
-        <nav className="glass-dark border-b border-dark-600/50">
+        <nav className="glass border-b border-surface-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-4">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  className={`py-3 px-4 inline-flex items-center gap-2 text-sm font-medium rounded-t-lg transition-all duration-300 ${activeTab === tab.id ? 'bg-surface-700 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-surface-800'}`}
+                  className={`py-3 px-4 inline-flex items-center gap-2 text-sm font-medium rounded-t-lg transition-all duration-300 ${activeTab === tab.id ? 'bg-surface-100 text-primary-700' : 'text-gray-500 hover:text-primary-600 hover:bg-surface-50'}`}
                   onClick={() => setActiveTab(tab.id)}
                 >
                   <tab.icon className="w-5 h-5" />
@@ -372,53 +372,53 @@ export default function Dashboard() {
             <div className="space-y-6">
               <Card className="card card-hover">
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">AI Agent Status</h3>
+                  <h3 className="text-lg font-semibold text-surface-900 mb-4">AI Agent Status</h3>
                   {!allOnboardingStepsComplete(onboardingData) && (
-                    <div className="mb-4 p-4 bg-warning-900/30 border border-warning-700/50 rounded-lg text-warning-300 text-sm">
+                    <div className="mb-4 p-4 bg-warning-50 border border-warning-200 rounded-lg text-warning-900 text-sm">
                       <strong>Complete all onboarding steps to activate your AI agent.</strong>
                       <div className="mt-2">
                         Incomplete steps:
                         <ul className="list-disc list-inside ml-4 mt-1">
                           {[1, 2, 3, 4, 5].filter(step => !isStepComplete(step, onboardingData)).map(step => (
-                            <li key={step} className="text-warning-200">{getStepTitle(step)}</li>
+                            <li key={step} className="text-warning-700">{getStepTitle(step)}</li>
                           ))}
                         </ul>
                       </div>
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className={`text-center p-4 rounded-lg border ${allOnboardingStepsComplete(onboardingData) ? 'bg-success-900/30 border-success-700/50' : 'bg-surface-700/50 border-surface-600/50'}`}>
+                    <div className={`text-center p-4 rounded-lg border ${allOnboardingStepsComplete(onboardingData) ? 'bg-success-100 border-success-300' : 'bg-surface-100 border-surface-300'}`}>
                       <div className="flex justify-center mb-2 gap-2">
-                        <AiOutlineRobot className={`w-8 h-8 ${allOnboardingStepsComplete(onboardingData) ? 'text-success-300' : 'text-gray-400'}`} />
+                        <AiOutlineRobot className={`w-8 h-8 ${allOnboardingStepsComplete(onboardingData) ? 'text-success-900' : 'text-gray-500'}`} />
                         <Tooltip text={allOnboardingStepsComplete(onboardingData) ? 'Your AI agent is live and available to users.' : 'Your AI agent will be live once all onboarding steps are complete.'}>
-                          <AiOutlineInfoCircle className={`w-5 h-5 ${allOnboardingStepsComplete(onboardingData) ? 'text-success-200' : 'text-gray-400'} cursor-pointer`} />
+                          <AiOutlineInfoCircle className={`w-5 h-5 ${allOnboardingStepsComplete(onboardingData) ? 'text-success-900' : 'text-gray-500'} cursor-pointer`} />
                         </Tooltip>
                       </div>
-                      <div className={`font-semibold ${allOnboardingStepsComplete(onboardingData) ? 'text-success-300' : 'text-gray-400'}`}>Agent</div>
-                      <div className={`text-sm ${allOnboardingStepsComplete(onboardingData) ? 'text-success-400' : 'text-gray-400'}`}>{allOnboardingStepsComplete(onboardingData) ? 'Live' : 'Inactive'}</div>
+                      <div className={`font-semibold ${allOnboardingStepsComplete(onboardingData) ? 'text-success-900' : 'text-gray-500'}`}>Agent</div>
+                      <div className={`text-sm ${allOnboardingStepsComplete(onboardingData) ? 'text-success-700' : 'text-gray-500'}`}>{allOnboardingStepsComplete(onboardingData) ? 'Live' : 'Inactive'}</div>
                     </div>
-                    <div className="text-center p-4 bg-primary-900/30 rounded-lg border border-primary-700/50">
+                    <div className="text-center p-4 bg-primary-100 rounded-lg border border-primary-300">
                       <div className="flex justify-center mb-2 gap-2">
-                        <GiBrain className="w-8 h-8 text-primary-300" />
+                        <GiBrain className="w-8 h-8 text-primary-900" />
                         <Tooltip text="The AI agent's knowledge base and skills are up to date.">
-                          <AiOutlineInfoCircle className="w-5 h-5 text-primary-200 cursor-pointer" />
+                          <AiOutlineInfoCircle className="w-5 h-5 text-primary-900 cursor-pointer" />
                         </Tooltip>
                       </div>
-                      <div className="font-semibold text-primary-300">Training</div>
-                      <div className="text-sm text-primary-400">Complete</div>
+                      <div className="font-semibold text-primary-900">Training</div>
+                      <div className="text-sm text-primary-700">Complete</div>
                     </div>
-                    <div className="text-center p-4 bg-accent-900/30 rounded-lg border border-accent-700/50">
+                    <div className="text-center p-4 bg-accent-100 rounded-lg border border-accent-300">
                       <div className="flex justify-center mb-2 gap-2">
-                        <AiOutlineLink className="w-8 h-8 text-accent-300" />
+                        <AiOutlineLink className="w-8 h-8 text-accent-900" />
                         <Tooltip text="Your AI agent is connected to third-party services.">
-                          <AiOutlineInfoCircle className="w-5 h-5 text-accent-200 cursor-pointer" />
+                          <AiOutlineInfoCircle className="w-5 h-5 text-accent-900 cursor-pointer" />
                         </Tooltip>
                       </div>
-                      <div className="font-semibold text-accent-300">Integration</div>
-                      <div className="text-sm text-accent-400">Connected</div>
-              </div>
-            </div>
-          </div>
+                      <div className="font-semibold text-accent-900">Integration</div>
+                      <div className="text-sm text-accent-700">Connected</div>
+                    </div>
+                  </div>
+                </div>
               </Card>
               {/* <Card className="p-6">
                 <ChatInterface
@@ -434,7 +434,7 @@ export default function Dashboard() {
             <div className="space-y-6">
               <Card className="card card-hover">
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Live Chat Preview</h3>
+                  <h3 className="text-lg font-semibold text-surface-900 mb-4">Live Chat Preview</h3>
                   <ChatInterface 
                     agentName={settings.agentName} // Pass the agentName from settings
                     welcomeMessage={settings.welcomeMessage} // Pass the welcomeMessage from settings

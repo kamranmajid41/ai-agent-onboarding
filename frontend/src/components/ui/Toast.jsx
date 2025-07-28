@@ -19,10 +19,10 @@ const Toast = ({
   const baseClasses = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-3 rounded-lg shadow-lg max-w-sm';
   
   const types = {
-    success: 'bg-green-600 text-white',
-    error: 'bg-red-600 text-white',
-    warning: 'bg-yellow-600 text-white',
-    info: 'bg-blue-600 text-white'
+    success: 'bg-success-100 text-success-900',
+    error: 'bg-error-100 text-error-900',
+    warning: 'bg-warning-100 text-warning-900',
+    info: 'bg-primary-100 text-primary-900'
   };
   
   const icons = {

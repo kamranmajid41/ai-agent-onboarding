@@ -98,7 +98,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin, loading = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-dark flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
       {showToast && (
         <Toast
           message={toastMessage}
@@ -107,10 +107,10 @@ const RegisterForm = ({ onRegister, onSwitchToLogin, loading = false }) => {
         />
       )}
       
-      <Card className="w-full max-w-lg glass-dark">
+      <Card className="w-full max-w-lg glass">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold gradient-text text-shadow mb-2">Create Account</h1>
-          <p className="text-gray-300">Join the AI Agent Platform and start building your AI assistant</p>
+          <p className="text-gray-600">Join the AI Agent Platform and start building your AI assistant</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -220,14 +220,14 @@ const RegisterForm = ({ onRegister, onSwitchToLogin, loading = false }) => {
             <input
               type="checkbox"
               id="terms"
-              className="mt-1 rounded border-surface-600 text-primary-600 focus:ring-primary-500 bg-surface-800"
+              className="mt-1 rounded border-surface-300 text-primary-600 focus:ring-primary-400 bg-surface-50"
               required
             />
-            <label htmlFor="terms" className="ml-2 text-sm text-gray-300">
+            <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
               I agree to the{' '}
-              <a href="#" className="text-primary-400 hover:text-primary-300 transition-colors">Terms of Service</a>
+              <a href="#" className="text-primary-600 hover:text-primary-500 transition-colors">Terms of Service</a>
               {' '}and{' '}
-              <a href="#" className="text-primary-400 hover:text-primary-300 transition-colors">Privacy Policy</a>
+              <a href="#" className="text-primary-600 hover:text-primary-500 transition-colors">Privacy Policy</a>
             </label>
           </div>
 
@@ -242,12 +242,12 @@ const RegisterForm = ({ onRegister, onSwitchToLogin, loading = false }) => {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-gray-600">
             Already have an account?{' '}
             <button
               type="button"
               onClick={onSwitchToLogin}
-              className="text-primary-400 hover:text-primary-300 font-medium transition-colors"
+              className="text-primary-600 hover:text-primary-500 font-medium transition-colors"
             >
               Sign in here
             </button>

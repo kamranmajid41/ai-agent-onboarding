@@ -35,90 +35,25 @@ export default function DashboardAnalytics({ metrics }) {
     <div className="space-y-6">
       <Card>
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Analytics Dashboard</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Total Conversations */}
+          <h3 className="text-3xl font-bold text-surface-900 mb-2">Analytics Dashboard</h3>
+          <p className="text-gray-600 mb-4">See how your AI agent is performing over time.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Total Conversations <Tooltip text="Total number of conversations handled by your AI agent."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <p className="text-5xl font-bold text-primary-400 mb-4">{metrics.totalConversations}</p>
+              <h4 className="text-lg font-semibold text-surface-900 mb-2 flex items-center gap-2">Total Conversations <Tooltip text="Total number of conversations handled by your AI agent."><AiOutlineInfoCircle className="w-4 h-4 text-primary-500 cursor-pointer" /></Tooltip></h4>
+              <p className="text-4xl font-bold text-primary-600 mb-2">{metrics.totalConversations}</p>
             </div>
-
-            {/* Total Messages */}
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Total Messages <Tooltip text="Total number of messages exchanged."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <p className="text-5xl font-bold text-accent-400 mb-4">{metrics.totalMessages}</p>
+              <h4 className="text-lg font-semibold text-surface-900 mb-2 flex items-center gap-2">Total Messages <Tooltip text="Total number of messages exchanged."><AiOutlineInfoCircle className="w-4 h-4 text-primary-500 cursor-pointer" /></Tooltip></h4>
+              <p className="text-4xl font-bold text-accent-600 mb-2">{metrics.totalMessages}</p>
             </div>
-
-            {/* Average Message Length */}
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Average Message Length <Tooltip text="Average character length of messages."><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <p className="text-5xl font-bold text-green-400 mb-4">{metrics.averageMessageLength} chars</p>
-            </div>
-
-            {/* Conversations Over Time (using derived mock data for now) */}
-            <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Conversations Over Time <Tooltip text="Shows the number of conversations your AI agent handled each day. (Derived from total conversations for demonstration)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={conversationData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="conversations" stroke="#6366f1" strokeWidth={3} dot={{ r: 5 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Satisfaction Rate Pie (using placeholder for now) */}
-            <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Satisfaction Rate <Tooltip text="Breakdown of user satisfaction with your AI agent. (Requires additional data collection)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              {metrics.satisfactionRate !== 'N/A' ? (
-                <ResponsiveContainer width="100%" height={220}>
-                  <PieChart>
-                    <Pie data={satisfactionData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label>
-                      {satisfactionData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="text-center text-gray-400 mt-8">
-                  <p>Data not available. Implement satisfaction feedback to populate this metric.</p>
-                </div>
-              )}
-            </div>
-
-            {/* Channel Breakdown Bar (using derived mock data for now) */}
-            <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Channel Breakdown <Tooltip text="Distribution of conversations by communication channel. (Derived from total conversations for demonstration)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={channelData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#6366f1">
-                    {channelData.map((entry, index) => (
-                      <Cell key={`cell-bar-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Top Intents/Questions (placeholder) */}
-            <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">Top Intents / Questions <Tooltip text="Most common user questions or intents. (Requires advanced NLP processing of conversation logs)"><AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" /></Tooltip></h4>
-              <div className="text-center text-gray-400 mt-8">
-                <p>Data not available. Implement advanced NLP for intent recognition to populate this metric.</p>
-              </div>
+              <h4 className="text-lg font-semibold text-surface-900 mb-2 flex items-center gap-2">Avg Message Length <Tooltip text="Average character length of messages."><AiOutlineInfoCircle className="w-4 h-4 text-primary-500 cursor-pointer" /></Tooltip></h4>
+              <p className="text-4xl font-bold text-secondary-600 mb-2">{metrics.averageMessageLength !== 'N/A' ? `${metrics.averageMessageLength} chars` : 'N/A'}</p>
             </div>
           </div>
         </div>
       </Card>
+      {/* Add more Card sections for charts, trends, etc. as needed, using the same conventions */}
     </div>
   );
 } 

@@ -29,12 +29,12 @@ const ProgressBar = ({
   return (
     <div className={className} {...props}>
       {showLabel && (
-        <div className="flex justify-between text-sm text-gray-300 mb-1">
+        <div className="flex justify-between text-sm text-gray-600 mb-1">
           <span>Progress</span>
           <span>{Math.round(percentage)}%</span>
         </div>
       )}
-      <div className={`w-full bg-surface-700 rounded-full h-2`}>
+      <div className={`w-full bg-surface-200 rounded-full h-2`}>
         <div
           className={`${colorClasses[color]} h-2 rounded-full transition-all duration-300`}
           style={{ width: `${percentage}%` }}

@@ -17,16 +17,16 @@ const MetricsCard = ({
   const baseClasses = 'card card-hover text-center';
   
   const colors = {
-    primary: 'text-primary-300',
-    success: 'text-success-300',
-    warning: 'text-warning-300',
-    danger: 'text-error-300',
-    info: 'text-primary-300'
+    primary: 'text-primary-600',
+    success: 'text-success-600',
+    warning: 'text-warning-600',
+    danger: 'text-error-600',
+    info: 'text-primary-600'
   };
   
   const trendColors = {
-    up: 'text-success-400',
-    down: 'text-error-400'
+    up: 'text-success-700',
+    down: 'text-error-700'
   };
   
   const classes = `${baseClasses} ${className}`;
@@ -70,10 +70,10 @@ const MetricsCard = ({
           </div>
         </div>
         <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="text-gray-300">{title}</span>
+          <span className="text-gray-600">{title}</span>
           {tooltip && (
             <Tooltip text={tooltip}>
-              <AiOutlineInfoCircle className="w-4 h-4 text-primary-200 cursor-pointer" />
+              <AiOutlineInfoCircle className="w-4 h-4 text-primary-500 cursor-pointer" />
             </Tooltip>
           )}
         </div>

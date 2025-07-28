@@ -11,20 +11,20 @@ const Input = ({
   className = '',
   ...props 
 }) => {
-  const baseClasses = 'w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 transition-all duration-300 bg-surface-800 text-white placeholder-gray-400';
+  const baseClasses = 'w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 transition-all duration-300 bg-surface-50 text-surface-900 placeholder-gray-400';
   
   const stateClasses = error 
-    ? 'border-error-500 focus:ring-error-400' 
+    ? 'border-error-400 focus:ring-error-300' 
     : success 
-    ? 'border-success-500 focus:ring-success-400' 
-    : 'border-surface-600 focus:ring-primary-400 focus:border-primary-500';
+    ? 'border-success-400 focus:ring-success-300' 
+    : 'border-surface-300 focus:ring-primary-300 focus:border-primary-400';
   
   const classes = `${baseClasses} ${stateClasses} ${className}`;
   
   return (
     <div className="relative">
       {label && (
-        <label className="block text-sm font-medium mb-2 flex items-center gap-1 text-white">
+        <label className="block text-sm font-medium mb-2 flex items-center gap-1 text-surface-900">
           {label}
           {tooltip && (
             <Tooltip text={tooltip}>
@@ -45,13 +45,13 @@ const Input = ({
         />
       </div>
       {error && (
-        <div className="text-error-400 text-xs mt-1 flex items-center gap-1">
+        <div className="text-error-600 text-xs mt-1 flex items-center gap-1">
           <span>⚠</span>
           {error}
         </div>
       )}
       {success && (
-        <div className="text-success-400 text-xs mt-1 flex items-center gap-1">
+        <div className="text-success-600 text-xs mt-1 flex items-center gap-1">
           <span>✓</span>
           {success}
         </div>

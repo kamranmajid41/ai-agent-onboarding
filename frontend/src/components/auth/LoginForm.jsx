@@ -71,7 +71,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister, loading = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-dark flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
       {showToast && (
         <Toast
           message={toastMessage}
@@ -80,10 +80,10 @@ const LoginForm = ({ onLogin, onSwitchToRegister, loading = false }) => {
         />
       )}
       
-      <Card className="w-full max-w-md glass-dark">
+      <Card className="w-full max-w-md glass">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold gradient-text text-shadow mb-2">Welcome Back</h1>
-          <p className="text-gray-300">Sign in to your AI Agent Platform account</p>
+          <p className="text-gray-600">Sign in to your AI Agent Platform account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -128,12 +128,12 @@ const LoginForm = ({ onLogin, onSwitchToRegister, loading = false }) => {
 
           <div className="flex items-center justify-between">
             <label className="flex items-center">
-              <input type="checkbox" className="rounded border-surface-600 text-primary-600 focus:ring-primary-500 bg-surface-800" />
-              <span className="ml-2 text-sm text-gray-300">Remember me</span>
+              <input type="checkbox" className="rounded border-surface-300 text-primary-600 focus:ring-primary-400 bg-surface-50" />
+              <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
             <button
               type="button"
-              className="text-sm text-primary-400 hover:text-primary-300 transition-colors"
+              className="text-sm text-primary-600 hover:text-primary-500 transition-colors"
               onClick={() => router.push('/auth/forgot-password')}
             >
               Forgot password?
@@ -151,12 +151,12 @@ const LoginForm = ({ onLogin, onSwitchToRegister, loading = false }) => {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-gray-600">
             Don't have an account?{' '}
             <button
               type="button"
               onClick={onSwitchToRegister}
-              className="text-primary-400 hover:text-primary-300 font-medium transition-colors"
+              className="text-primary-600 hover:text-primary-500 font-medium transition-colors"
             >
               Sign up here
             </button>

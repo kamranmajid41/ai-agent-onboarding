@@ -16,8 +16,8 @@ const Card = ({
     <div className={classes} {...props}>
       {(title || subtitle) && (
         <div className="mb-4">
-          {title && <h3 className="font-semibold text-lg text-white">{title}</h3>}
-          {subtitle && <p className="text-sm text-gray-200 mt-1">{subtitle}</p>}
+          {title && <h3 className="font-semibold text-lg text-surface-900">{title}</h3>}
+          {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
         </div>
       )}
       {children}

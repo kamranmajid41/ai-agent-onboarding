@@ -17,8 +17,8 @@ export default function DashboardOverview({
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-2">Welcome back, {user?.firstName}!</h2>
-        <p className="text-gray-300">Here's what's happening with your AI agent today.</p>
+        <h2 className="text-3xl font-bold text-surface-900 mb-2">Welcome back, {user?.firstName}!</h2>
+        <p className="text-gray-600">Here's what's happening with your AI agent today.</p>
       </div>
 
       {/* Metrics Cards */}
@@ -61,20 +61,20 @@ export default function DashboardOverview({
       <Card title="Company Information" subtitle="Your business details">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300">Company Name</label>
-            <p className="mt-1 text-sm text-white">{user?.company?.name || 'Not set'}</p>
+            <label className="block text-sm font-medium text-gray-600">Company Name</label>
+            <p className="mt-1 text-sm text-surface-900">{user?.company?.name || 'Not set'}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300">Website</label>
-            <p className="mt-1 text-sm text-white">{user?.company?.website || 'Not set'}</p>
+            <label className="block text-sm font-medium text-gray-600">Website</label>
+            <p className="mt-1 text-sm text-surface-900">{user?.company?.website || 'Not set'}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300">Industry</label>
-            <p className="mt-1 text-sm text-white">{user?.company?.industry || 'Not set'}</p>
+            <label className="block text-sm font-medium text-gray-600">Industry</label>
+            <p className="mt-1 text-sm text-surface-900">{user?.company?.industry || 'Not set'}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300">Email</label>
-            <p className="mt-1 text-sm text-white">{user?.email}</p>
+            <label className="block text-sm font-medium text-gray-600">Email</label>
+            <p className="mt-1 text-sm text-surface-900">{user?.email}</p>
           </div>
         </div>
       </Card>
@@ -83,8 +83,8 @@ export default function DashboardOverview({
       <Card title="Onboarding Progress" subtitle="Complete your AI agent setup">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-white">Setup Progress</span>
-            <span className="text-sm text-gray-300">{progress}% Complete</span>
+            <span className="text-sm font-medium text-surface-900">Setup Progress</span>
+            <span className="text-sm text-gray-600">{progress}% Complete</span>
           </div>
           <ProgressBar 
             value={progress} 
@@ -101,8 +101,8 @@ export default function DashboardOverview({
                   key={step}
                   className={`text-center p-3 rounded-lg border transition-all ${
                     isCompleted
-                      ? 'bg-success-900/30 border-success-700/50 text-success-300'
-                      : 'bg-surface-700/50 border-surface-600/50 text-gray-400'
+                      ? 'bg-success-100 border-success-300 text-success-900'
+                      : 'bg-surface-100 border-surface-300 text-gray-500'
                   }`}
                 >
                   <div className="text-lg mb-1">
@@ -133,17 +133,17 @@ export default function DashboardOverview({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="card card-hover">
           <div className="p-6 text-center">
-            <div className="w-12 h-12 bg-primary-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">🤖</span>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">View Agent</h3>
-            <p className="text-sm text-gray-300 mb-4">
+            <h3 className="text-lg font-semibold text-surface-900 mb-2">View Agent</h3>
+            <p className="text-sm text-gray-600 mb-4">
               Check your AI agent's status and performance
             </p>
             <Button
               onClick={() => setActiveTab('agents')}
               variant="outline"
-              className="w-full border-primary-500 text-primary-400 hover:bg-primary-900/20"
+              className="w-full border-primary-400 text-primary-600 hover:bg-primary-100"
             >
               Go to Agents
             </Button>
@@ -152,17 +152,17 @@ export default function DashboardOverview({
 
         <Card className="card card-hover">
           <div className="p-6 text-center">
-            <div className="w-12 h-12 bg-accent-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">💬</span>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Live Chat</h3>
-            <p className="text-sm text-gray-300 mb-4">
+            <h3 className="text-lg font-semibold text-surface-900 mb-2">Live Chat</h3>
+            <p className="text-sm text-gray-600 mb-4">
               Monitor conversations and chat with your agent
             </p>
             <Button
               onClick={() => setActiveTab('conversations')}
               variant="outline"
-              className="w-full border-accent-500 text-accent-400 hover:bg-accent-900/20"
+              className="w-full border-accent-400 text-accent-600 hover:bg-accent-100"
             >
               View Conversations
             </Button>
@@ -174,8 +174,8 @@ export default function DashboardOverview({
             <div className="w-12 h-12 bg-success-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">📊</span>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Analytics</h3>
-            <p className="text-sm text-gray-300 mb-4">
+            <h3 className="text-lg font-semibold text-surface-900 mb-2">Analytics</h3>
+            <p className="text-sm text-gray-600 mb-4">
               View detailed analytics and performance metrics
             </p>
             <Button
